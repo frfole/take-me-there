@@ -1,0 +1,639 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PublicationDelivery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1" xmlns="http://www.netex.org.uk/netex">
+  <PublicationTimestamp>2024-11-01T19:00:01</PublicationTimestamp>
+  <ParticipantRef>CZ:cisjr</ParticipantRef>
+  <dataObjects>
+    <CompositeFrame id="CZ:cisjr_jdf:CompositeFrame-EU_PI_LINE_OFFER" version="1">
+      <TypeOfFrameRef ref="epip:EU_PI_LINE_OFFER" />
+      <codespaces>
+        <Codespace id="epip_data">
+          <Xmlns>epd</Xmlns>
+          <XmlnsUrl>http://netex-cen.eu/epip_data</XmlnsUrl>
+          <Description>EPIP data</Description>
+        </Codespace>
+        <Codespace id="epip">
+          <Xmlns>epip</Xmlns>
+          <XmlnsUrl>http://netex-cen.eu/epip</XmlnsUrl>
+          <Description>EPIP metadata</Description>
+        </Codespace>
+      </codespaces>
+      <FrameDefaults>
+        <DefaultLocale>
+          <TimeZone>Europe/Prague</TimeZone>
+          <DefaultLanguage>cs</DefaultLanguage>
+        </DefaultLocale>
+      </FrameDefaults>
+      <frames>
+        <ResourceFrame id="CZ:cisjr_jdf:ResourceFrame-EU_PI_COMMON" version="1">
+          <TypeOfFrameRef ref="epip:EU_PI_COMMON" />
+          <FrameDefaults>
+            <DefaultCodespaceRef ref="epip_data" />
+          </FrameDefaults>
+          <organisations>
+            <Operator id="CZ:cisjr_jdf:Operator:15040500_1" version="1">
+              <PublicCode>15040500</PublicCode>
+              <LegalName>AUDIS BUS s.r.o.</LegalName>
+              <ContactDetails>
+                <Email>rychnovsko@transdev.com</Email>
+                <Phone>+420 494 533 737</Phone>
+                <Url>www.audisbus.cz</Url>
+              </ContactDetails>
+              <OrganisationType>operator</OrganisationType>
+              <Address id="CZ:cisjr_jdf:Address:15040500_1" version="1">
+                <AddressLine1>Soukenická 242, 516 01 Rychnov nad Kněžnou</AddressLine1>
+              </Address>
+            </Operator>
+          </organisations>
+        </ResourceFrame>
+        <ServiceCalendarFrame id="CZ:cisjr_jdf:ServiceCalendarFrame-EU_PI_CALENDAR" version="1">
+          <TypeOfFrameRef ref="epip:EU_PI_CALENDAR" />
+          <FrameDefaults>
+            <DefaultCodespaceRef ref="epip_data" />
+          </FrameDefaults>
+          <ServiceCalendar id="CZ:cisjr_jdf:ServiceCalendar" version="1">
+            <dayTypes>
+              <DayType id="CZ:cisjr_jdf:DayType:1" version="1" />
+            </dayTypes>
+            <operatingPeriods>
+              <UicOperatingPeriod id="CZ:cisjr_jdf:UicOperatingPeriod:1" version="1">
+                <FromDate>2023-12-10T00:00:00</FromDate>
+                <ToDate>2024-12-14T00:00:00</ToDate>
+                <ValidDayBits>01111100111110000111000111100111110011111001111100111110011111001111100111110011111001111100111110011111001111000011110011111001111100111110011011001101100111110011111001111100111110011111001111100111110011110001111100111110011111001111100111110011111001111100111110011111001111100111110011111001111100111110011111001111100011110011111001111100111110011111001111100111110</ValidDayBits>
+              </UicOperatingPeriod>
+            </operatingPeriods>
+            <dayTypeAssignments>
+              <DayTypeAssignment id="CZ:cisjr_jdf:DayTypeAssignment:1" version="1" order="1">
+                <OperatingPeriodRef nameOfRefClass="UicOperatingPeriod" version="1" ref="CZ:cisjr_jdf:UicOperatingPeriod:1" />
+                <DayTypeRef version="1" ref="CZ:cisjr_jdf:DayType:1" />
+                <isAvailable>true</isAvailable>
+              </DayTypeAssignment>
+            </dayTypeAssignments>
+          </ServiceCalendar>
+        </ServiceCalendarFrame>
+        <SiteFrame id="CZ:cisjr_jdf:SiteFrame-EU_PI_STOP" version="1">
+          <TypeOfFrameRef ref="epip:EU_PI_STOP" />
+          <FrameDefaults>
+            <DefaultCodespaceRef ref="epip_data" />
+          </FrameDefaults>
+          <stopPlaces>
+            <StopPlace id="CZ:cisjr_jdf:StopPlace:1" version="1">
+              <Name>České Meziříčí,,aut.st.</Name>
+              <StopPlaceType>other</StopPlaceType>
+            </StopPlace>
+            <StopPlace id="CZ:cisjr_jdf:StopPlace:2" version="1">
+              <Name>České Meziříčí,,cukrovar</Name>
+              <StopPlaceType>other</StopPlaceType>
+            </StopPlace>
+            <StopPlace id="CZ:cisjr_jdf:StopPlace:3" version="1">
+              <Name>Dobruška,,aut.st.</Name>
+              <StopPlaceType>other</StopPlaceType>
+            </StopPlace>
+            <StopPlace id="CZ:cisjr_jdf:StopPlace:4" version="1">
+              <Name>Dobruška,,Grafitec</Name>
+              <StopPlaceType>other</StopPlaceType>
+            </StopPlace>
+            <StopPlace id="CZ:cisjr_jdf:StopPlace:5" version="1">
+              <Name>Dobruška,,gymnázium</Name>
+              <StopPlaceType>other</StopPlaceType>
+            </StopPlace>
+            <StopPlace id="CZ:cisjr_jdf:StopPlace:6" version="1">
+              <Name>Dobruška,Pulice,has.zbroj.</Name>
+              <StopPlaceType>other</StopPlaceType>
+            </StopPlace>
+            <StopPlace id="CZ:cisjr_jdf:StopPlace:7" version="1">
+              <Name>Dobruška,Pulice,ZD</Name>
+              <StopPlaceType>other</StopPlaceType>
+            </StopPlace>
+            <StopPlace id="CZ:cisjr_jdf:StopPlace:8" version="1">
+              <Name>Opočno,,Jordánek</Name>
+              <StopPlaceType>other</StopPlaceType>
+            </StopPlace>
+            <StopPlace id="CZ:cisjr_jdf:StopPlace:9" version="1">
+              <Name>Opočno,,Podzámčí</Name>
+              <StopPlaceType>other</StopPlaceType>
+            </StopPlace>
+            <StopPlace id="CZ:cisjr_jdf:StopPlace:10" version="1">
+              <Name>Opočno,,nám.</Name>
+              <StopPlaceType>other</StopPlaceType>
+            </StopPlace>
+            <StopPlace id="CZ:cisjr_jdf:StopPlace:11" version="1">
+              <Name>Opočno,,hřbitov</Name>
+              <StopPlaceType>other</StopPlaceType>
+            </StopPlace>
+            <StopPlace id="CZ:cisjr_jdf:StopPlace:12" version="1">
+              <Name>Opočno,,Nádražní</Name>
+              <StopPlaceType>other</StopPlaceType>
+            </StopPlace>
+            <StopPlace id="CZ:cisjr_jdf:StopPlace:13" version="1">
+              <Name>Opočno,,žel.st.</Name>
+              <StopPlaceType>other</StopPlaceType>
+            </StopPlace>
+            <StopPlace id="CZ:cisjr_jdf:StopPlace:14" version="1">
+              <Name>Pohoří,,MŠ</Name>
+              <StopPlaceType>other</StopPlaceType>
+            </StopPlace>
+            <StopPlace id="CZ:cisjr_jdf:StopPlace:15" version="1">
+              <Name>Pohoří,,prodejna</Name>
+              <StopPlaceType>other</StopPlaceType>
+            </StopPlace>
+            <StopPlace id="CZ:cisjr_jdf:StopPlace:16" version="1">
+              <Name>Pohoří,,kovárna</Name>
+              <StopPlaceType>other</StopPlaceType>
+            </StopPlace>
+            <StopPlace id="CZ:cisjr_jdf:StopPlace:17" version="1">
+              <Name>Pohoří,,žel.zast.</Name>
+              <StopPlaceType>other</StopPlaceType>
+            </StopPlace>
+            <StopPlace id="CZ:cisjr_jdf:StopPlace:18" version="1">
+              <Name>Pohoří,,Puličky</Name>
+              <StopPlaceType>other</StopPlaceType>
+            </StopPlace>
+          </stopPlaces>
+        </SiteFrame>
+        <ServiceFrame id="CZ:cisjr_jdf:ServiceFrame-EU_PI_NETWORK" version="1">
+          <TypeOfFrameRef ref="epip:EU_PI_NETWORK" />
+          <FrameDefaults>
+            <DefaultCodespaceRef ref="epip_data" />
+          </FrameDefaults>
+          <directions>
+            <Direction id="CZ:cisjr_jdf:Direction:out" version="1">
+              <DirectionType>outbound</DirectionType>
+            </Direction>
+            <Direction id="CZ:cisjr_jdf:Direction:in" version="1">
+              <DirectionType>inbound</DirectionType>
+            </Direction>
+          </directions>
+          <lines>
+            <Line id="CZ:cisjr_jdf:Line:661263_1" version="1">
+              <ValidBetween>
+                <FromDate>2023-12-10T00:00:00</FromDate>
+                <ToDate>2024-12-14T00:00:00</ToDate>
+              </ValidBetween>
+              <keyList>
+                <KeyValue>
+                  <Key>JdfLineType</Key>
+                  <Value>V</Value>
+                </KeyValue>
+                <KeyValue>
+                  <Key>JdfDetourTimetable</Key>
+                  <Value>0</Value>
+                </KeyValue>
+                <KeyValue>
+                  <Key>JdfLinExt</Key>
+                  <Value>30522;263</Value>
+                </KeyValue>
+              </keyList>
+              <Name>263 Dobruška-Opočno/Pohoří-Č.Meziříčí</Name>
+              <ShortName>263</ShortName>
+              <TransportMode>bus</TransportMode>
+              <PublicCode>661263</PublicCode>
+              <OperatorRef version="1" ref="CZ:cisjr_jdf:Operator:15040500_1" />
+              <noticeAssignments>
+                <NoticeAssignment id="CZ:cisjr_jdf:NoticeAssignment:661263_1_1" version="1" order="1">
+                  <Notice id="CZ:cisjr_jdf:Notice:661263_1_1" version="1">
+                    <Text>Na lince platí tarif a smluvní přepravní podmínky IREDO. Informace o tarifu, vyčkávání spojů a smluvních přepravních podmínkách jsou zveřejněny na www.dopravakhk.cz a ve vozidle na lince. Skupiny nad 15 osob hlaste nejpozději 7 dní před přepravou pomocí </Text>
+                  </Notice>
+                </NoticeAssignment>
+                <NoticeAssignment id="CZ:cisjr_jdf:NoticeAssignment:661263_1_2" version="1" order="2">
+                  <Notice id="CZ:cisjr_jdf:Notice:661263_1_2" version="1">
+                    <Text>~formuláře na www.iredo.info/skupiny/. Kontakt Call centrum IDS IREDO: 491 580 333, www.iredo.online.</Text>
+                  </Notice>
+                </NoticeAssignment>
+              </noticeAssignments>
+            </Line>
+          </lines>
+          <scheduledStopPoints>
+            <ScheduledStopPoint id="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_1" version="1">
+              <Name>Dobruška,,aut.st.</Name>
+              <Location />
+            </ScheduledStopPoint>
+            <ScheduledStopPoint id="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_2" version="1">
+              <Name>Dobruška,,Grafitec</Name>
+              <Location />
+            </ScheduledStopPoint>
+            <ScheduledStopPoint id="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_3" version="1">
+              <Name>Opočno,,hřbitov</Name>
+              <Location />
+            </ScheduledStopPoint>
+            <ScheduledStopPoint id="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_4" version="1">
+              <Name>Opočno,,nám.</Name>
+              <Location />
+            </ScheduledStopPoint>
+            <ScheduledStopPoint id="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_5" version="1">
+              <Name>Opočno,,Nádražní</Name>
+              <Location />
+            </ScheduledStopPoint>
+            <ScheduledStopPoint id="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_6" version="1">
+              <Name>Opočno,,Jordánek</Name>
+              <Location />
+            </ScheduledStopPoint>
+            <ScheduledStopPoint id="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_7" version="1">
+              <Name>Dobruška,,gymnázium</Name>
+              <Location />
+            </ScheduledStopPoint>
+            <ScheduledStopPoint id="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_8" version="1">
+              <Name>Dobruška,Pulice,has.zbroj.</Name>
+              <Location />
+            </ScheduledStopPoint>
+            <ScheduledStopPoint id="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_9" version="1">
+              <Name>Dobruška,Pulice,ZD</Name>
+              <Location />
+            </ScheduledStopPoint>
+            <ScheduledStopPoint id="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_10" version="1">
+              <Name>Pohoří,,Puličky</Name>
+              <Location />
+            </ScheduledStopPoint>
+            <ScheduledStopPoint id="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_11" version="1">
+              <Name>Pohoří,,MŠ</Name>
+              <Location />
+            </ScheduledStopPoint>
+            <ScheduledStopPoint id="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_12" version="1">
+              <Name>Pohoří,,prodejna</Name>
+              <Location />
+            </ScheduledStopPoint>
+            <ScheduledStopPoint id="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_13" version="1">
+              <Name>Opočno,,Jordánek</Name>
+              <Location />
+            </ScheduledStopPoint>
+            <ScheduledStopPoint id="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_14" version="1">
+              <Name>Pohoří,,kovárna</Name>
+              <Location />
+            </ScheduledStopPoint>
+            <ScheduledStopPoint id="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_15" version="1">
+              <Name>Pohoří,,žel.zast.</Name>
+              <Location />
+            </ScheduledStopPoint>
+            <ScheduledStopPoint id="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_16" version="1">
+              <Name>Opočno,,Podzámčí</Name>
+              <Location />
+            </ScheduledStopPoint>
+            <ScheduledStopPoint id="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_17" version="1">
+              <Name>Opočno,,žel.st.</Name>
+              <Location />
+            </ScheduledStopPoint>
+            <ScheduledStopPoint id="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_18" version="1">
+              <Name>České Meziříčí,,cukrovar</Name>
+              <Location />
+            </ScheduledStopPoint>
+            <ScheduledStopPoint id="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_19" version="1">
+              <Name>České Meziříčí,,aut.st.</Name>
+              <Location />
+            </ScheduledStopPoint>
+          </scheduledStopPoints>
+          <serviceLinks>
+            <ServiceLink id="CZ:cisjr_jdf:ServiceLink:661263_1_1_2_0" version="1">
+              <Distance>0</Distance>
+              <FromPointRef nameOfRefClass="ScheduledStopPoint" version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_1" />
+              <ToPointRef nameOfRefClass="ScheduledStopPoint" version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_2" />
+            </ServiceLink>
+            <ServiceLink id="CZ:cisjr_jdf:ServiceLink:661263_1_2_1_0" version="1">
+              <Distance>0</Distance>
+              <FromPointRef nameOfRefClass="ScheduledStopPoint" version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_2" />
+              <ToPointRef nameOfRefClass="ScheduledStopPoint" version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_1" />
+            </ServiceLink>
+            <ServiceLink id="CZ:cisjr_jdf:ServiceLink:661263_1_2_3_4" version="1">
+              <Distance>4000</Distance>
+              <FromPointRef nameOfRefClass="ScheduledStopPoint" version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_2" />
+              <ToPointRef nameOfRefClass="ScheduledStopPoint" version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_3" />
+            </ServiceLink>
+            <ServiceLink id="CZ:cisjr_jdf:ServiceLink:661263_1_3_2_4" version="1">
+              <Distance>4000</Distance>
+              <FromPointRef nameOfRefClass="ScheduledStopPoint" version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_3" />
+              <ToPointRef nameOfRefClass="ScheduledStopPoint" version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_2" />
+            </ServiceLink>
+            <ServiceLink id="CZ:cisjr_jdf:ServiceLink:661263_1_3_4_0" version="1">
+              <Distance>0</Distance>
+              <FromPointRef nameOfRefClass="ScheduledStopPoint" version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_3" />
+              <ToPointRef nameOfRefClass="ScheduledStopPoint" version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_4" />
+            </ServiceLink>
+            <ServiceLink id="CZ:cisjr_jdf:ServiceLink:661263_1_4_3_0" version="1">
+              <Distance>0</Distance>
+              <FromPointRef nameOfRefClass="ScheduledStopPoint" version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_4" />
+              <ToPointRef nameOfRefClass="ScheduledStopPoint" version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_3" />
+            </ServiceLink>
+            <ServiceLink id="CZ:cisjr_jdf:ServiceLink:661263_1_4_5_1" version="1">
+              <Distance>1000</Distance>
+              <FromPointRef nameOfRefClass="ScheduledStopPoint" version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_4" />
+              <ToPointRef nameOfRefClass="ScheduledStopPoint" version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_5" />
+            </ServiceLink>
+            <ServiceLink id="CZ:cisjr_jdf:ServiceLink:661263_1_5_4_1" version="1">
+              <Distance>1000</Distance>
+              <FromPointRef nameOfRefClass="ScheduledStopPoint" version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_5" />
+              <ToPointRef nameOfRefClass="ScheduledStopPoint" version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_4" />
+            </ServiceLink>
+            <ServiceLink id="CZ:cisjr_jdf:ServiceLink:661263_1_5_6_0" version="1">
+              <Distance>0</Distance>
+              <FromPointRef nameOfRefClass="ScheduledStopPoint" version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_5" />
+              <ToPointRef nameOfRefClass="ScheduledStopPoint" version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_6" />
+            </ServiceLink>
+            <ServiceLink id="CZ:cisjr_jdf:ServiceLink:661263_1_6_5_0" version="1">
+              <Distance>0</Distance>
+              <FromPointRef nameOfRefClass="ScheduledStopPoint" version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_6" />
+              <ToPointRef nameOfRefClass="ScheduledStopPoint" version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_5" />
+            </ServiceLink>
+            <ServiceLink id="CZ:cisjr_jdf:ServiceLink:661263_1_6_16_1" version="1">
+              <Distance>1000</Distance>
+              <FromPointRef nameOfRefClass="ScheduledStopPoint" version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_6" />
+              <ToPointRef nameOfRefClass="ScheduledStopPoint" version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_16" />
+            </ServiceLink>
+            <ServiceLink id="CZ:cisjr_jdf:ServiceLink:661263_1_16_6_1" version="1">
+              <Distance>1000</Distance>
+              <FromPointRef nameOfRefClass="ScheduledStopPoint" version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_16" />
+              <ToPointRef nameOfRefClass="ScheduledStopPoint" version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_6" />
+            </ServiceLink>
+            <ServiceLink id="CZ:cisjr_jdf:ServiceLink:661263_1_16_17_1" version="1">
+              <Distance>1000</Distance>
+              <FromPointRef nameOfRefClass="ScheduledStopPoint" version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_16" />
+              <ToPointRef nameOfRefClass="ScheduledStopPoint" version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_17" />
+            </ServiceLink>
+            <ServiceLink id="CZ:cisjr_jdf:ServiceLink:661263_1_17_16_1" version="1">
+              <Distance>1000</Distance>
+              <FromPointRef nameOfRefClass="ScheduledStopPoint" version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_17" />
+              <ToPointRef nameOfRefClass="ScheduledStopPoint" version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_16" />
+            </ServiceLink>
+          </serviceLinks>
+          <stopAssignments>
+            <PassengerStopAssignment id="CZ:cisjr_jdf:PassengerStopAssignment:661263_1_1" version="1" order="1">
+              <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_1" />
+              <StopPlaceRef version="1" ref="CZ:cisjr_jdf:StopPlace:3" />
+            </PassengerStopAssignment>
+            <PassengerStopAssignment id="CZ:cisjr_jdf:PassengerStopAssignment:661263_1_2" version="1" order="2">
+              <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_2" />
+              <StopPlaceRef version="1" ref="CZ:cisjr_jdf:StopPlace:4" />
+            </PassengerStopAssignment>
+            <PassengerStopAssignment id="CZ:cisjr_jdf:PassengerStopAssignment:661263_1_3" version="1" order="3">
+              <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_3" />
+              <StopPlaceRef version="1" ref="CZ:cisjr_jdf:StopPlace:11" />
+            </PassengerStopAssignment>
+            <PassengerStopAssignment id="CZ:cisjr_jdf:PassengerStopAssignment:661263_1_4" version="1" order="4">
+              <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_4" />
+              <StopPlaceRef version="1" ref="CZ:cisjr_jdf:StopPlace:10" />
+            </PassengerStopAssignment>
+            <PassengerStopAssignment id="CZ:cisjr_jdf:PassengerStopAssignment:661263_1_5" version="1" order="5">
+              <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_5" />
+              <StopPlaceRef version="1" ref="CZ:cisjr_jdf:StopPlace:12" />
+            </PassengerStopAssignment>
+            <PassengerStopAssignment id="CZ:cisjr_jdf:PassengerStopAssignment:661263_1_6" version="1" order="6">
+              <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_6" />
+              <StopPlaceRef version="1" ref="CZ:cisjr_jdf:StopPlace:8" />
+            </PassengerStopAssignment>
+            <PassengerStopAssignment id="CZ:cisjr_jdf:PassengerStopAssignment:661263_1_7" version="1" order="7">
+              <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_7" />
+              <StopPlaceRef version="1" ref="CZ:cisjr_jdf:StopPlace:5" />
+            </PassengerStopAssignment>
+            <PassengerStopAssignment id="CZ:cisjr_jdf:PassengerStopAssignment:661263_1_8" version="1" order="8">
+              <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_8" />
+              <StopPlaceRef version="1" ref="CZ:cisjr_jdf:StopPlace:6" />
+            </PassengerStopAssignment>
+            <PassengerStopAssignment id="CZ:cisjr_jdf:PassengerStopAssignment:661263_1_9" version="1" order="9">
+              <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_9" />
+              <StopPlaceRef version="1" ref="CZ:cisjr_jdf:StopPlace:7" />
+            </PassengerStopAssignment>
+            <PassengerStopAssignment id="CZ:cisjr_jdf:PassengerStopAssignment:661263_1_10" version="1" order="10">
+              <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_10" />
+              <StopPlaceRef version="1" ref="CZ:cisjr_jdf:StopPlace:18" />
+            </PassengerStopAssignment>
+            <PassengerStopAssignment id="CZ:cisjr_jdf:PassengerStopAssignment:661263_1_11" version="1" order="11">
+              <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_11" />
+              <StopPlaceRef version="1" ref="CZ:cisjr_jdf:StopPlace:14" />
+            </PassengerStopAssignment>
+            <PassengerStopAssignment id="CZ:cisjr_jdf:PassengerStopAssignment:661263_1_12" version="1" order="12">
+              <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_12" />
+              <StopPlaceRef version="1" ref="CZ:cisjr_jdf:StopPlace:15" />
+            </PassengerStopAssignment>
+            <PassengerStopAssignment id="CZ:cisjr_jdf:PassengerStopAssignment:661263_1_13" version="1" order="13">
+              <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_13" />
+              <StopPlaceRef version="1" ref="CZ:cisjr_jdf:StopPlace:8" />
+            </PassengerStopAssignment>
+            <PassengerStopAssignment id="CZ:cisjr_jdf:PassengerStopAssignment:661263_1_14" version="1" order="14">
+              <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_14" />
+              <StopPlaceRef version="1" ref="CZ:cisjr_jdf:StopPlace:16" />
+            </PassengerStopAssignment>
+            <PassengerStopAssignment id="CZ:cisjr_jdf:PassengerStopAssignment:661263_1_15" version="1" order="15">
+              <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_15" />
+              <StopPlaceRef version="1" ref="CZ:cisjr_jdf:StopPlace:17" />
+            </PassengerStopAssignment>
+            <PassengerStopAssignment id="CZ:cisjr_jdf:PassengerStopAssignment:661263_1_16" version="1" order="16">
+              <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_16" />
+              <StopPlaceRef version="1" ref="CZ:cisjr_jdf:StopPlace:9" />
+            </PassengerStopAssignment>
+            <PassengerStopAssignment id="CZ:cisjr_jdf:PassengerStopAssignment:661263_1_17" version="1" order="17">
+              <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_17" />
+              <StopPlaceRef version="1" ref="CZ:cisjr_jdf:StopPlace:13" />
+            </PassengerStopAssignment>
+            <PassengerStopAssignment id="CZ:cisjr_jdf:PassengerStopAssignment:661263_1_18" version="1" order="18">
+              <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_18" />
+              <StopPlaceRef version="1" ref="CZ:cisjr_jdf:StopPlace:2" />
+            </PassengerStopAssignment>
+            <PassengerStopAssignment id="CZ:cisjr_jdf:PassengerStopAssignment:661263_1_19" version="1" order="19">
+              <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_19" />
+              <StopPlaceRef version="1" ref="CZ:cisjr_jdf:StopPlace:1" />
+            </PassengerStopAssignment>
+          </stopAssignments>
+          <journeyPatterns>
+            <ServiceJourneyPattern id="CZ:cisjr_jdf:ServiceJourneyPattern:1_out" version="1">
+              <RouteView id="CZ:cisjr_jdf:RouteView:1_out">
+                <LineRef version="1" ref="CZ:cisjr_jdf:Line:661263_1" />
+              </RouteView>
+              <DirectionRef version="1" ref="CZ:cisjr_jdf:Direction:out" />
+              <pointsInSequence>
+                <StopPointInJourneyPattern id="CZ:cisjr_jdf:StopPointInJourneyPattern:1_out_1" version="1" order="1">
+                  <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_1" />
+                  <OnwardServiceLinkRef nameOfRefClass="ServiceLink" version="1" ref="CZ:cisjr_jdf:ServiceLink:661263_1_1_2_0" />
+                </StopPointInJourneyPattern>
+                <StopPointInJourneyPattern id="CZ:cisjr_jdf:StopPointInJourneyPattern:1_out_2" version="1" order="2">
+                  <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_2" />
+                  <OnwardServiceLinkRef nameOfRefClass="ServiceLink" version="1" ref="CZ:cisjr_jdf:ServiceLink:661263_1_2_3_4" />
+                </StopPointInJourneyPattern>
+                <StopPointInJourneyPattern id="CZ:cisjr_jdf:StopPointInJourneyPattern:1_out_3" version="1" order="3">
+                  <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_3" />
+                  <OnwardServiceLinkRef nameOfRefClass="ServiceLink" version="1" ref="CZ:cisjr_jdf:ServiceLink:661263_1_3_4_0" />
+                </StopPointInJourneyPattern>
+                <StopPointInJourneyPattern id="CZ:cisjr_jdf:StopPointInJourneyPattern:1_out_4" version="1" order="4">
+                  <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_4" />
+                  <OnwardServiceLinkRef nameOfRefClass="ServiceLink" version="1" ref="CZ:cisjr_jdf:ServiceLink:661263_1_4_5_1" />
+                </StopPointInJourneyPattern>
+                <StopPointInJourneyPattern id="CZ:cisjr_jdf:StopPointInJourneyPattern:1_out_5" version="1" order="5">
+                  <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_5" />
+                  <OnwardServiceLinkRef nameOfRefClass="ServiceLink" version="1" ref="CZ:cisjr_jdf:ServiceLink:661263_1_5_6_0" />
+                </StopPointInJourneyPattern>
+                <StopPointInJourneyPattern id="CZ:cisjr_jdf:StopPointInJourneyPattern:1_out_6" version="1" order="6">
+                  <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_6" />
+                  <OnwardServiceLinkRef nameOfRefClass="ServiceLink" version="1" ref="CZ:cisjr_jdf:ServiceLink:661263_1_6_16_1" />
+                </StopPointInJourneyPattern>
+                <StopPointInJourneyPattern id="CZ:cisjr_jdf:StopPointInJourneyPattern:1_out_16" version="1" order="7">
+                  <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_16" />
+                  <OnwardServiceLinkRef nameOfRefClass="ServiceLink" version="1" ref="CZ:cisjr_jdf:ServiceLink:661263_1_16_17_1" />
+                </StopPointInJourneyPattern>
+                <StopPointInJourneyPattern id="CZ:cisjr_jdf:StopPointInJourneyPattern:1_out_17" version="1" order="8">
+                  <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_17" />
+                </StopPointInJourneyPattern>
+              </pointsInSequence>
+            </ServiceJourneyPattern>
+            <ServiceJourneyPattern id="CZ:cisjr_jdf:ServiceJourneyPattern:2_in" version="1">
+              <RouteView id="CZ:cisjr_jdf:RouteView:2_in">
+                <LineRef version="1" ref="CZ:cisjr_jdf:Line:661263_1" />
+              </RouteView>
+              <DirectionRef version="1" ref="CZ:cisjr_jdf:Direction:in" />
+              <pointsInSequence>
+                <StopPointInJourneyPattern id="CZ:cisjr_jdf:StopPointInJourneyPattern:2_in_17" version="1" order="1">
+                  <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_17" />
+                  <OnwardServiceLinkRef nameOfRefClass="ServiceLink" version="1" ref="CZ:cisjr_jdf:ServiceLink:661263_1_17_16_1" />
+                </StopPointInJourneyPattern>
+                <StopPointInJourneyPattern id="CZ:cisjr_jdf:StopPointInJourneyPattern:2_in_16" version="1" order="2">
+                  <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_16" />
+                  <OnwardServiceLinkRef nameOfRefClass="ServiceLink" version="1" ref="CZ:cisjr_jdf:ServiceLink:661263_1_16_6_1" />
+                </StopPointInJourneyPattern>
+                <StopPointInJourneyPattern id="CZ:cisjr_jdf:StopPointInJourneyPattern:2_in_6" version="1" order="3">
+                  <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_6" />
+                  <OnwardServiceLinkRef nameOfRefClass="ServiceLink" version="1" ref="CZ:cisjr_jdf:ServiceLink:661263_1_6_5_0" />
+                </StopPointInJourneyPattern>
+                <StopPointInJourneyPattern id="CZ:cisjr_jdf:StopPointInJourneyPattern:2_in_5" version="1" order="4">
+                  <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_5" />
+                  <OnwardServiceLinkRef nameOfRefClass="ServiceLink" version="1" ref="CZ:cisjr_jdf:ServiceLink:661263_1_5_4_1" />
+                </StopPointInJourneyPattern>
+                <StopPointInJourneyPattern id="CZ:cisjr_jdf:StopPointInJourneyPattern:2_in_4" version="1" order="5">
+                  <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_4" />
+                  <OnwardServiceLinkRef nameOfRefClass="ServiceLink" version="1" ref="CZ:cisjr_jdf:ServiceLink:661263_1_4_3_0" />
+                </StopPointInJourneyPattern>
+                <StopPointInJourneyPattern id="CZ:cisjr_jdf:StopPointInJourneyPattern:2_in_3" version="1" order="6">
+                  <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_3" />
+                  <OnwardServiceLinkRef nameOfRefClass="ServiceLink" version="1" ref="CZ:cisjr_jdf:ServiceLink:661263_1_3_2_4" />
+                </StopPointInJourneyPattern>
+                <StopPointInJourneyPattern id="CZ:cisjr_jdf:StopPointInJourneyPattern:2_in_2" version="1" order="7">
+                  <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_2" />
+                  <OnwardServiceLinkRef nameOfRefClass="ServiceLink" version="1" ref="CZ:cisjr_jdf:ServiceLink:661263_1_2_1_0" />
+                </StopPointInJourneyPattern>
+                <StopPointInJourneyPattern id="CZ:cisjr_jdf:StopPointInJourneyPattern:2_in_1" version="1" order="8">
+                  <ScheduledStopPointRef version="1" ref="CZ:cisjr_jdf:ScheduledStopPoint:661263_1_1" />
+                </StopPointInJourneyPattern>
+              </pointsInSequence>
+            </ServiceJourneyPattern>
+          </journeyPatterns>
+        </ServiceFrame>
+        <TimetableFrame id="CZ:cisjr_jdf:TimetableFrame-EU_PI_TIMETABLE" version="1">
+          <TypeOfFrameRef ref="epip:EU_PI_TIMETABLE" />
+          <FrameDefaults>
+            <DefaultCodespaceRef ref="epip_data" />
+          </FrameDefaults>
+          <vehicleJourneys>
+            <ServiceJourney id="CZ:cisjr_jdf:ServiceJourney:661263_1_11" version="1">
+              <ValidBetween>
+                <FromDate>2023-12-10T00:00:00</FromDate>
+                <ToDate>2024-12-14T00:00:00</ToDate>
+              </ValidBetween>
+              <Name>11</Name>
+              <TransportMode>bus</TransportMode>
+              <dayTypes>
+                <DayTypeRef version="1" ref="CZ:cisjr_jdf:DayType:1" />
+              </dayTypes>
+              <ServiceJourneyPatternRef version="1" ref="CZ:cisjr_jdf:ServiceJourneyPattern:1_out" />
+              <passingTimes id="CZ:cisjr_jdf:PassingTimes:661263_1_11">
+                <TimetabledPassingTime id="CZ:cisjr_jdf:TimetabledPassingTime:661263_1_11_1" version="1">
+                  <StopPointInJourneyPatternRef version="1" ref="CZ:cisjr_jdf:StopPointInJourneyPattern:1_out_1" />
+                  <DepartureTime>10:40:00</DepartureTime>
+                </TimetabledPassingTime>
+                <TimetabledPassingTime id="CZ:cisjr_jdf:TimetabledPassingTime:661263_1_11_2" version="1">
+                  <StopPointInJourneyPatternRef version="1" ref="CZ:cisjr_jdf:StopPointInJourneyPattern:1_out_2" />
+                  <ArrivalTime>10:41:00</ArrivalTime>
+                  <DepartureTime>10:41:00</DepartureTime>
+                </TimetabledPassingTime>
+                <TimetabledPassingTime id="CZ:cisjr_jdf:TimetabledPassingTime:661263_1_11_3" version="1">
+                  <StopPointInJourneyPatternRef version="1" ref="CZ:cisjr_jdf:StopPointInJourneyPattern:1_out_3" />
+                  <ArrivalTime>10:45:00</ArrivalTime>
+                  <DepartureTime>10:45:00</DepartureTime>
+                </TimetabledPassingTime>
+                <TimetabledPassingTime id="CZ:cisjr_jdf:TimetabledPassingTime:661263_1_11_4" version="1">
+                  <StopPointInJourneyPatternRef version="1" ref="CZ:cisjr_jdf:StopPointInJourneyPattern:1_out_4" />
+                  <ArrivalTime>10:46:00</ArrivalTime>
+                  <DepartureTime>10:47:00</DepartureTime>
+                </TimetabledPassingTime>
+                <TimetabledPassingTime id="CZ:cisjr_jdf:TimetabledPassingTime:661263_1_11_5" version="1">
+                  <StopPointInJourneyPatternRef version="1" ref="CZ:cisjr_jdf:StopPointInJourneyPattern:1_out_5" />
+                  <ArrivalTime>10:48:00</ArrivalTime>
+                  <DepartureTime>10:48:00</DepartureTime>
+                </TimetabledPassingTime>
+                <TimetabledPassingTime id="CZ:cisjr_jdf:TimetabledPassingTime:661263_1_11_6" version="1">
+                  <StopPointInJourneyPatternRef version="1" ref="CZ:cisjr_jdf:StopPointInJourneyPattern:1_out_6" />
+                  <ArrivalTime>10:50:00</ArrivalTime>
+                  <DepartureTime>10:50:00</DepartureTime>
+                </TimetabledPassingTime>
+                <TimetabledPassingTime id="CZ:cisjr_jdf:TimetabledPassingTime:661263_1_11_16" version="1">
+                  <StopPointInJourneyPatternRef version="1" ref="CZ:cisjr_jdf:StopPointInJourneyPattern:1_out_16" />
+                  <ArrivalTime>10:51:00</ArrivalTime>
+                  <DepartureTime>10:51:00</DepartureTime>
+                </TimetabledPassingTime>
+                <TimetabledPassingTime id="CZ:cisjr_jdf:TimetabledPassingTime:661263_1_11_17" version="1">
+                  <StopPointInJourneyPatternRef version="1" ref="CZ:cisjr_jdf:StopPointInJourneyPattern:1_out_17" />
+                  <ArrivalTime>10:52:00</ArrivalTime>
+                </TimetabledPassingTime>
+              </passingTimes>
+              <facilities>
+                <ServiceFacilitySet id="CZ:cisjr_jdf:ServiceFacilitySet:661263_1_11" version="1">
+                  <MobilityFacilityList>lowFloor</MobilityFacilityList>
+                </ServiceFacilitySet>
+              </facilities>
+            </ServiceJourney>
+            <ServiceJourney id="CZ:cisjr_jdf:ServiceJourney:661263_1_12" version="1">
+              <ValidBetween>
+                <FromDate>2023-12-10T00:00:00</FromDate>
+                <ToDate>2024-12-14T00:00:00</ToDate>
+              </ValidBetween>
+              <Name>12</Name>
+              <TransportMode>bus</TransportMode>
+              <dayTypes>
+                <DayTypeRef version="1" ref="CZ:cisjr_jdf:DayType:1" />
+              </dayTypes>
+              <ServiceJourneyPatternRef version="1" ref="CZ:cisjr_jdf:ServiceJourneyPattern:2_in" />
+              <passingTimes id="CZ:cisjr_jdf:PassingTimes:661263_1_12">
+                <TimetabledPassingTime id="CZ:cisjr_jdf:TimetabledPassingTime:661263_1_12_17" version="1">
+                  <StopPointInJourneyPatternRef version="1" ref="CZ:cisjr_jdf:StopPointInJourneyPattern:2_in_17" />
+                  <DepartureTime>11:08:00</DepartureTime>
+                </TimetabledPassingTime>
+                <TimetabledPassingTime id="CZ:cisjr_jdf:TimetabledPassingTime:661263_1_12_16" version="1">
+                  <StopPointInJourneyPatternRef version="1" ref="CZ:cisjr_jdf:StopPointInJourneyPattern:2_in_16" />
+                  <ArrivalTime>11:09:00</ArrivalTime>
+                  <DepartureTime>11:09:00</DepartureTime>
+                </TimetabledPassingTime>
+                <TimetabledPassingTime id="CZ:cisjr_jdf:TimetabledPassingTime:661263_1_12_6" version="1">
+                  <StopPointInJourneyPatternRef version="1" ref="CZ:cisjr_jdf:StopPointInJourneyPattern:2_in_6" />
+                  <ArrivalTime>11:10:00</ArrivalTime>
+                  <DepartureTime>11:10:00</DepartureTime>
+                </TimetabledPassingTime>
+                <TimetabledPassingTime id="CZ:cisjr_jdf:TimetabledPassingTime:661263_1_12_5" version="1">
+                  <StopPointInJourneyPatternRef version="1" ref="CZ:cisjr_jdf:StopPointInJourneyPattern:2_in_5" />
+                  <ArrivalTime>11:11:00</ArrivalTime>
+                  <DepartureTime>11:11:00</DepartureTime>
+                </TimetabledPassingTime>
+                <TimetabledPassingTime id="CZ:cisjr_jdf:TimetabledPassingTime:661263_1_12_4" version="1">
+                  <StopPointInJourneyPatternRef version="1" ref="CZ:cisjr_jdf:StopPointInJourneyPattern:2_in_4" />
+                  <ArrivalTime>11:12:00</ArrivalTime>
+                  <DepartureTime>11:14:00</DepartureTime>
+                </TimetabledPassingTime>
+                <TimetabledPassingTime id="CZ:cisjr_jdf:TimetabledPassingTime:661263_1_12_3" version="1">
+                  <StopPointInJourneyPatternRef version="1" ref="CZ:cisjr_jdf:StopPointInJourneyPattern:2_in_3" />
+                  <ArrivalTime>11:15:00</ArrivalTime>
+                  <DepartureTime>11:15:00</DepartureTime>
+                </TimetabledPassingTime>
+                <TimetabledPassingTime id="CZ:cisjr_jdf:TimetabledPassingTime:661263_1_12_2" version="1">
+                  <StopPointInJourneyPatternRef version="1" ref="CZ:cisjr_jdf:StopPointInJourneyPattern:2_in_2" />
+                  <ArrivalTime>11:19:00</ArrivalTime>
+                  <DepartureTime>11:19:00</DepartureTime>
+                </TimetabledPassingTime>
+                <TimetabledPassingTime id="CZ:cisjr_jdf:TimetabledPassingTime:661263_1_12_1" version="1">
+                  <StopPointInJourneyPatternRef version="1" ref="CZ:cisjr_jdf:StopPointInJourneyPattern:2_in_1" />
+                  <ArrivalTime>11:20:00</ArrivalTime>
+                </TimetabledPassingTime>
+              </passingTimes>
+              <facilities>
+                <ServiceFacilitySet id="CZ:cisjr_jdf:ServiceFacilitySet:661263_1_12" version="1">
+                  <MobilityFacilityList>lowFloor</MobilityFacilityList>
+                </ServiceFacilitySet>
+              </facilities>
+            </ServiceJourney>
+          </vehicleJourneys>
+        </TimetableFrame>
+      </frames>
+    </CompositeFrame>
+  </dataObjects>
+</PublicationDelivery>

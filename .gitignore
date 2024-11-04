@@ -1,0 +1,8 @@
+/target
+/.idea
+
+# to get those run download.sh in sample-all directory
+/sample-all/*.zip
+/sample-all/*.xml
+/temp
+
