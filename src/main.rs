@@ -29,29 +29,29 @@ struct Args {
     invalidate_cache: bool,
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let args = Args::parse();
+fn save_netex_cache(cache_path: &PathBuf, connections: &Vec<parser::Connection>)
+-> Result<(), Box<dyn std::error::Error>>
+{
+    let mut file = File::create(&cache_path)?;
+    bincode::serialize_into(&file, &connections)?;
+    file.flush()?;
+    Ok(())
+}
 
-    let mut graph = petgraph::graphmap::DiGraphMap::new();
-    let mut vert2idx = HashMap::new();
-    let mut idx2vert = HashMap::new();
-    let mut same_vert: HashMap<String, BTreeMap<NaiveTime, usize>> = HashMap::new();
-    let mut vert_counter = 0;
-
-
+fn load_netex(path: &PathBuf, invalidate_cache: bool)
+-> Result<Vec<parser::Connection>, Box<dyn std::error::Error>>
+{
     let mut counter = 0;
-    let start = SystemTime::now();
-
     let mut connections = Vec::new();
+    
+    let data_cache = path.join("cache.bin");
 
-    let data_cache = args.data_path.join("cache.bin");
-
-    if (!args.invalidate_cache) && data_cache.is_file() {
+    if (!invalidate_cache) && data_cache.is_file() {
         println!("Loading from cache");
         let file = File::open(data_cache)?;
         connections = bincode::deserialize_from(file)?;
     } else {
-        for entry in args.data_path.read_dir()? {
+        for entry in path.read_dir()? {
             if let Ok(entry) = entry {
                 if entry.path().is_file() && entry.path().extension() == Some("xml".as_ref()) {
                     if counter % 100 == 0 {
@@ -64,10 +64,28 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         }
         println!("Caching...");
-        let mut file = File::create(data_cache)?;
-        bincode::serialize_into(&file, &connections)?;
-        file.flush()?;
+        if let Err(e) = save_netex_cache(&data_cache, &connections) {
+            println!("Failed to save cache:\n {}", e);
+        }
     }
+
+    Ok(connections)
+}
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let args = Args::parse();
+
+    let mut graph = petgraph::graphmap::DiGraphMap::new();
+    let mut vert2idx = HashMap::new();
+    let mut idx2vert = HashMap::new();
+    let mut same_vert: HashMap<String, BTreeMap<NaiveTime, usize>> = HashMap::new();
+    let mut vert_counter = 0;
+
+
+    let start = SystemTime::now();
+
+    let connections = load_netex(&args.data_path, args.invalidate_cache)?;
+
 
     println!("Creating graph...");
 
