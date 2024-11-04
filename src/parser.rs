@@ -4,6 +4,7 @@ use quick_xml::events::Event;
 use quick_xml::Reader;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, HashMap};
+use std::fmt::Display;
 use std::path::Path;
 use std::str::FromStr;
 
@@ -34,6 +35,37 @@ struct ParsedPassing {
 struct ParsedJourneyPattern {
     order: BTreeMap<i32, String>,
     points: HashMap<String, String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub enum StopPlaceType {
+    RailStation,
+    Other,
+    Unknown
+}
+
+impl StopPlaceType {
+    pub fn from_str(s: &str) -> Self {
+        match s {
+            "railStation" => StopPlaceType::RailStation,
+            "other" => StopPlaceType::Other,
+            _ => {
+                println!("Unknown stop place type: {}", s);
+                StopPlaceType::Unknown
+            }
+        }
+    }
+}
+
+impl Display for StopPlaceType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let str = match self {
+            StopPlaceType::RailStation => { String::from("RailStation") }
+            StopPlaceType::Other => { String::from("Other") }
+            StopPlaceType::Unknown => { String::from("Unknown") }
+        };
+        write!(f, "{}", str)
+    }
 }
 
 macro_rules! netex_frames {
@@ -96,6 +128,7 @@ impl Journey {
     }
 }
 
+// TODO: add option to merge stops from multiple connections
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Connection {
     pub operating_periods: Vec<OperatingPeriod>,
@@ -136,8 +169,8 @@ pub fn parse_netex<P: AsRef<Path>>(file_path: P) -> Result<Connection, Box<dyn s
     let mut ref_op_period = None;
     let mut ref_day_type = None;
 
-    // ScheduledStopPoint - station name map
-    let mut sched_stop2name = HashMap::new();
+    let mut stop_place2name_type: HashMap<String, (Option<String>, Option<StopPlaceType>)> = HashMap::new();
+    let mut passenger_stops: Vec<(Option<String>, Option<String>)> = Vec::new();
     // list of DayType
     let mut day_types = Vec::new();
 
@@ -154,6 +187,10 @@ pub fn parse_netex<P: AsRef<Path>>(file_path: P) -> Result<Connection, Box<dyn s
                     "ServiceFrame", "scheduledStopPoints", "ScheduledStopPoint"
                 ]) {
                     id = Some(e.try_get_attribute("id")?.unwrap().unescape_value()?.to_string());
+                } else if path_vec_eq(&path, netex_frames![
+                    "ServiceFrame", "stopAssignments", "PassengerStopAssignment"
+                ]) {
+                    passenger_stops.push((None, None));
                 } else if path_vec_eq(&path, netex_frames![
                     "ServiceFrame", "journeyPatterns", "ServiceJourneyPattern"
                 ]) {
@@ -172,11 +209,16 @@ pub fn parse_netex<P: AsRef<Path>>(file_path: P) -> Result<Connection, Box<dyn s
                     "ServiceCalendarFrame", "ServiceCalendar", "operatingPeriods", "UicOperatingPeriod"
                 ]) {
                     id = Some(e.try_get_attribute("id")?.unwrap().unescape_value()?.to_string());
-                    operating_perdios.insert(e.try_get_attribute("id")?.unwrap().unescape_value()?.to_string(), ParsedOperatingPeriod {
+                    operating_perdios.insert(id.clone().unwrap().clone(), ParsedOperatingPeriod {
                         from_date: Default::default(),
                         to_date: Default::default(),
                         day_bits: Default::default(),
                     });
+                } else if path_vec_eq(&path, netex_frames![
+                    "SiteFrame", "stopPlaces", "StopPlace"
+                ]) {
+                    id = Some(e.try_get_attribute("id")?.unwrap().unescape_value()?.to_string());
+                    stop_place2name_type.insert(id.clone().unwrap().clone(), (None, None));
                 } else if path_vec_eq(&path, netex_frames![
                     "TimetableFrame", "vehicleJourneys", "ServiceJourney"
                 ]) {
@@ -200,11 +242,6 @@ pub fn parse_netex<P: AsRef<Path>>(file_path: P) -> Result<Connection, Box<dyn s
             Ok(Event::Empty(e)) => {
                 path.push(String::from_utf8(Vec::from(e.name().0)).unwrap());
                 if path_vec_eq(&path, netex_frames![
-                    "ServiceFrame", "journeyPatterns", "ServiceJourneyPattern", "pointsInSequence", "StopPointInJourneyPattern", "ScheduledStopPointRef"
-                ]) {
-                    journey_patterns.get_mut(&id_pattern.clone().unwrap()).unwrap().points
-                        .insert(id.clone().unwrap().clone(), e.try_get_attribute("ref")?.unwrap().unescape_value()?.to_string());
-                } else if path_vec_eq(&path, netex_frames![
                     "ServiceCalendarFrame", "ServiceCalendar", "dayTypes", "DayType"
                 ]) {
                     day_types.push(e.try_get_attribute("id")?.unwrap().unescape_value()?.to_string());
@@ -216,6 +253,19 @@ pub fn parse_netex<P: AsRef<Path>>(file_path: P) -> Result<Connection, Box<dyn s
                     "ServiceCalendarFrame", "ServiceCalendar", "dayTypeAssignments", "DayTypeAssignment", "DayTypeRef"
                 ]) {
                     ref_day_type = Some(e.try_get_attribute("ref")?.unwrap().unescape_value()?.to_string());
+                } else if path_vec_eq(&path, netex_frames![
+                    "ServiceFrame", "journeyPatterns", "ServiceJourneyPattern", "pointsInSequence", "StopPointInJourneyPattern", "ScheduledStopPointRef"
+                ]) {
+                    journey_patterns.get_mut(&id_pattern.clone().unwrap()).unwrap().points
+                        .insert(id.clone().unwrap().clone(), e.try_get_attribute("ref")?.unwrap().unescape_value()?.to_string());
+                } else if path_vec_eq(&path, netex_frames![
+                    "ServiceFrame", "stopAssignments", "PassengerStopAssignment", "ScheduledStopPointRef"
+                ]) {
+                    passenger_stops.last_mut().unwrap().0 = Some(e.try_get_attribute("ref")?.unwrap().unescape_value()?.to_string());
+                } else if path_vec_eq(&path, netex_frames![
+                    "ServiceFrame", "stopAssignments", "PassengerStopAssignment", "StopPlaceRef"
+                ]) {
+                    passenger_stops.last_mut().unwrap().1 = Some(e.try_get_attribute("ref")?.unwrap().unescape_value()?.to_string());
                 } else if path_vec_eq(&path, netex_frames![
                     "TimetableFrame", "vehicleJourneys", "ServiceJourney", "dayTypes", "DayTypeRef"
                 ]) {
@@ -243,11 +293,6 @@ pub fn parse_netex<P: AsRef<Path>>(file_path: P) -> Result<Connection, Box<dyn s
             }
             Ok(Event::Text(e)) => {
                 if path_vec_eq(&path, netex_frames![
-                    "ServiceFrame", "scheduledStopPoints", "ScheduledStopPoint", "Name"
-                ]) {
-                    let a = e.unescape()?.to_string();
-                    sched_stop2name.insert(id.clone().unwrap(), a);
-                } else if path_vec_eq(&path, netex_frames![
                     "ServiceCalendarFrame", "ServiceCalendar", "operatingPeriods", "UicOperatingPeriod", "FromDate"
                 ]) {
                     operating_perdios.get_mut(&id.clone().unwrap()).unwrap().from_date = Some(NaiveDateTime::parse_from_str(&e.unescape()?, "%Y-%m-%dT%H:%M:%S")?);
@@ -267,6 +312,14 @@ pub fn parse_netex<P: AsRef<Path>>(file_path: P) -> Result<Connection, Box<dyn s
                         }
                     }
                     operating_perdios.get_mut(&id.clone().unwrap()).unwrap().day_bits = Some(bits);
+                } else if path_vec_eq(&path, netex_frames![
+                    "SiteFrame", "stopPlaces", "StopPlace", "Name"
+                ]) {
+                    stop_place2name_type.get_mut(&id.clone().unwrap()).unwrap().0 = Some(e.unescape()?.to_string());
+                } else if path_vec_eq(&path, netex_frames![
+                    "SiteFrame", "stopPlaces", "StopPlace", "StopPlaceType"
+                ]) {
+                    stop_place2name_type.get_mut(&id.clone().unwrap()).unwrap().1 = Some(StopPlaceType::from_str(&e.unescape()?));
                 } else if path_vec_eq(&path, netex_frames![
                     "TimetableFrame", "vehicleJourneys", "ServiceJourney", "ValidBetween", "FromDate"
                 ]) {
@@ -315,9 +368,12 @@ pub fn parse_netex<P: AsRef<Path>>(file_path: P) -> Result<Connection, Box<dyn s
 
     let mut new_stops = Vec::new();
     let mut idx_stops = HashMap::new();
-    for (stop, name) in sched_stop2name {
-        idx_stops.insert(stop, new_stops.len());
-        new_stops.push(name);
+    for (sched_stop_ref, stop_place_ref) in &passenger_stops {
+        idx_stops.insert(sched_stop_ref.clone().unwrap(), new_stops.len());
+        new_stops.push(
+                           stop_place2name_type[&stop_place_ref.clone().unwrap()].0.clone().unwrap().clone()
+                               + "/" + stop_place2name_type[&stop_place_ref.clone().unwrap()].1.clone().unwrap().to_string().as_str(),
+        );
     }
 
     let mut new_patterns = Vec::new();

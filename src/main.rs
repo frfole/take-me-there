@@ -124,17 +124,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             start_t = end_t;
         }
     }
-    let end_vert: Vec<usize> = same_vert["Liberec"].iter().map(|(k, v)| *v).collect();
+    let end_vert: Vec<usize> = same_vert["Liberec/RailStation"].iter().map(|(k, v)| *v).collect();
 
-    for (_, start_vert) in &same_vert["Opočno,,nám."] {
+    for (_, start_vert) in &same_vert["Opočno,,nám./Other"] {
         println!("start {}", idx2vert[&start_vert]);
-        let scores = astar(&graph, *start_vert, |f| end_vert.contains(&f), |e| *e.weight(), |_| 0).unwrap();
-        println!("cost: {}", scores.0);
-        for vert in scores.1 {
-            print!("{} ", idx2vert[&vert]);
+        let score = astar(&graph, *start_vert, |f| end_vert.contains(&f), |e| *e.weight(), |_| 0);
+        if let Some((cost, path)) = score {
+            println!("cost: {}", cost);
+            for vert in path {
+                print!("{} ", idx2vert[&vert]);
+            }
+            println!();
+            println!();
         }
-        println!();
-        println!();
     }
     // let scores = dijkstra(&graph, *start_vert, None, |e| *e.weight());
     // for (vert, score) in scores {
