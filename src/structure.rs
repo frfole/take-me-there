@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
-use chrono::NaiveDateTime;
+use chrono::{NaiveDateTime, NaiveTime};
+use chrono::naive::serde::ts_seconds;
 use bit_set::BitSet;
 use std::fmt::Display;
-use crate::parser::Passing;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum StopPlaceType {
@@ -38,7 +38,9 @@ impl Display for StopPlaceType {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct OperatingPeriod {
+    #[serde(with = "ts_seconds")]
     pub from_date: NaiveDateTime,
+    #[serde(with = "ts_seconds")]
     pub to_date: NaiveDateTime,
     pub day_bits: BitSet
 }
@@ -57,7 +59,9 @@ impl OperatingPeriod {
 pub struct Journey {
     // sequence of passings
     pub passings: Vec<Passing>,
+    #[serde(with = "ts_seconds")]
     pub valid_from: NaiveDateTime,
+    #[serde(with = "ts_seconds")]
     pub valid_to: NaiveDateTime,
     // index of day type
     pub days: Vec<usize>,
@@ -165,4 +169,34 @@ impl From<Vec<Connection>> for MultiConnection {
             connections: sub_conns,
         }
     }
+}
+
+mod opt_ts_seconds {
+    use chrono::{NaiveTime, Timelike};
+    use serde::{self, Deserialize, Deserializer, Serializer};
+
+    pub fn serialize<S>(date: &Option<NaiveTime>, s: S) -> Result<S::Ok, S::Error> where S: Serializer {
+        if let Some(ref d) = *date {
+            return s.serialize_some(&d.num_seconds_from_midnight());
+        }
+        s.serialize_none()
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<Option<NaiveTime>, D::Error> where D: Deserializer<'de> {
+        let s: Option<u32> = Option::deserialize(deserializer)?;
+        if let Some(sec) = s {
+            return Ok(NaiveTime::from_num_seconds_from_midnight_opt(sec, 0));
+        }
+        Ok(None)
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Passing {
+    // index of stop in connection stops
+    pub stop_point: usize,
+    #[serde(default, with = "opt_ts_seconds")]
+    pub arrival: Option<NaiveTime>,
+    #[serde(default, with = "opt_ts_seconds")]
+    pub departure: Option<NaiveTime>,
 }

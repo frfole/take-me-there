@@ -2,11 +2,10 @@ use bit_set::BitSet;
 use chrono::{NaiveDateTime, NaiveTime};
 use quick_xml::events::Event;
 use quick_xml::Reader;
-use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, HashMap};
 use std::path::Path;
 use std::str::FromStr;
-use crate::structure::{Connection, Journey, OperatingPeriod, StopPlaceType};
+use crate::structure::{Connection, Journey, OperatingPeriod, Passing, StopPlaceType};
 
 #[derive(Debug)]
 struct ParsedOperatingPeriod {
@@ -44,14 +43,6 @@ macro_rules! netex_frames {
             std::boxed::Box::new(["PublicationDelivery", "dataObjects", "CompositeFrame", "frames", $($x),+])
         )
     );
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Passing {
-    // index of stop in connection stops
-    pub stop_point: usize,
-    pub arrival: Option<NaiveTime>,
-    pub departure: Option<NaiveTime>,
 }
 
 pub fn parse_netex<P: AsRef<Path>>(file_path: P) -> Result<Connection, Box<dyn std::error::Error>> {
