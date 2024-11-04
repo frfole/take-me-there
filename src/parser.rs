@@ -4,9 +4,9 @@ use quick_xml::events::Event;
 use quick_xml::Reader;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, HashMap};
-use std::fmt::Display;
 use std::path::Path;
 use std::str::FromStr;
+use crate::structure::{Connection, Journey, OperatingPeriod, StopPlaceType};
 
 #[derive(Debug)]
 struct ParsedOperatingPeriod {
@@ -37,37 +37,6 @@ struct ParsedJourneyPattern {
     points: HashMap<String, String>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub enum StopPlaceType {
-    RailStation,
-    Other,
-    Unknown
-}
-
-impl StopPlaceType {
-    pub fn from_str(s: &str) -> Self {
-        match s {
-            "railStation" => StopPlaceType::RailStation,
-            "other" => StopPlaceType::Other,
-            _ => {
-                println!("Unknown stop place type: {}", s);
-                StopPlaceType::Unknown
-            }
-        }
-    }
-}
-
-impl Display for StopPlaceType {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let str = match self {
-            StopPlaceType::RailStation => { String::from("RailStation") }
-            StopPlaceType::Other => { String::from("Other") }
-            StopPlaceType::Unknown => { String::from("Unknown") }
-        };
-        write!(f, "{}", str)
-    }
-}
-
 macro_rules! netex_frames {
     // taken from vec! macro
     ($($x:expr),+ $(,)?) => (
@@ -78,84 +47,11 @@ macro_rules! netex_frames {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct OperatingPeriod {
-    pub from_date: NaiveDateTime,
-    pub to_date: NaiveDateTime,
-    pub day_bits: BitSet
-}
-
-impl OperatingPeriod {
-    pub fn is_valid(&self, date: NaiveDateTime) -> bool {
-        if self.from_date > date || date > self.to_date {
-            return false;
-        }
-        let delta = date - self.from_date;
-        self.day_bits.contains(delta.num_days() as usize)
-    }
-}
-
-#[derive(Debug, Serialize, Deserialize)]
 pub struct Passing {
     // index of stop in connection stops
     pub stop_point: usize,
     pub arrival: Option<NaiveTime>,
     pub departure: Option<NaiveTime>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Journey {
-    // sequence of passings
-    pub passings: Vec<Passing>,
-    pub valid_from: NaiveDateTime,
-    pub valid_to: NaiveDateTime,
-    // index of day type
-    pub days: Vec<usize>,
-}
-
-impl Journey {
-    pub fn is_valid(&self, parent: &Connection, date: NaiveDateTime) -> bool {
-        if self.valid_from > date || date > self.valid_to {
-            return false;
-        }
-        for day_idx in &self.days {
-            if let Some(period_idx) = parent.day_types[*day_idx] {
-                if parent.operating_periods[period_idx].is_valid(date) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-}
-
-// TODO: add option to merge stops from multiple connections
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Connection {
-    pub operating_periods: Vec<OperatingPeriod>,
-    // index of operating period in operating periods
-    pub day_types: Vec<Option<usize>>,
-    // stop names by index
-    // FIXME: there are stations with same name, which further down the line may cause problems
-    pub stops: Vec<String>,
-    pub journeys: Vec<Journey>
-}
-
-impl Connection {
-    pub fn print_journey(&self, index: usize) {
-        if self.journeys.len() < index {
-            println!("journey {} is out of bounds", index);
-            return;
-        }
-        let journey = &self.journeys[index];
-        println!("journey {} with index", index);
-        println!("valid from {} to {}", journey.valid_from, journey.valid_to);
-        for passing in &journey.passings {
-            println!("\t- {:?} - {:?}: {}",
-                     passing.arrival.map_or_else(|| String::from(""), |t| t.format("%H:%M:%S").to_string()),
-                     passing.departure.map_or_else(|| String::from(""), |t| t.format("%H:%M:%S").to_string()),
-                     self.stops[passing.stop_point]);
-        }
-    }
 }
 
 pub fn parse_netex<P: AsRef<Path>>(file_path: P) -> Result<Connection, Box<dyn std::error::Error>> {
