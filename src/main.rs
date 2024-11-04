@@ -24,12 +24,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut connections = Vec::new();
 
-    if Path::new("sample-all/cache.bin").is_file() {
+    let base_folder = Path::new("sample-all");
+
+    if base_folder.join("cache.bin").is_file() && true {
         println!("Loading from cache");
-        let file = File::open("sample-all/cache.bin")?;
+        let file = File::open(base_folder.join("cache.bin"))?;
         connections = bincode::deserialize_from(file)?;
     } else {
-        for entry in Path::new("sample-all").read_dir()? {
+        for entry in base_folder.read_dir()? {
             if let Ok(entry) = entry {
                 if entry.path().is_file() && entry.path().extension() == Some("xml".as_ref()) {
                     if counter % 100 == 0 {
@@ -42,7 +44,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         }
         println!("Caching...");
-        let mut file = File::create("sample-all/cache.bin")?;
+        let mut file = File::create(base_folder.join("cache.bin"))?;
         bincode::serialize_into(&file, &connections)?;
         file.flush()?;
     }
@@ -102,17 +104,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             start_t = end_t;
         }
     }
-    let end_vert: Vec<usize> = same_vert["Liberec"].iter().map(|(k, v)| *v).collect();
+    let end_vert: Vec<usize> = same_vert["Liberec/RailStation"].iter().map(|(k, v)| *v).collect();
 
-    for (_, start_vert) in &same_vert["Opočno,,nám."] {
+    for (_, start_vert) in &same_vert["Opočno,,nám./Other"] {
         println!("start {}", idx2vert[&start_vert]);
-        let scores = astar(&graph, *start_vert, |f| end_vert.contains(&f), |e| *e.weight(), |_| 0).unwrap();
-        println!("cost: {}", scores.0);
-        for vert in scores.1 {
-            print!("{} ", idx2vert[&vert]);
+        let score = astar(&graph, *start_vert, |f| end_vert.contains(&f), |e| *e.weight(), |_| 0);
+        if let Some((cost, path)) = score {
+            println!("cost: {}", cost);
+            for vert in path {
+                print!("{} ", idx2vert[&vert]);
+            }
+            println!();
+            println!();
         }
-        println!();
-        println!();
     }
     // let scores = dijkstra(&graph, *start_vert, None, |e| *e.weight());
     // for (vert, score) in scores {
