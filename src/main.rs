@@ -4,33 +4,30 @@ use petgraph::algo::{astar, dijkstra};
 use petgraph::visit::EdgeRef;
 use std::collections::{BTreeMap, HashMap};
 use std::fs::File;
-use std::io::{Read, Write};
+use std::io::Write;
 use std::path::Path;
 use std::time::SystemTime;
+use flate2::Compression;
+use flate2::read::ZlibDecoder;
+use flate2::write::ZlibEncoder;
+use crate::structure::MultiConnection;
 
 mod parser;
-
+mod structure;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut graph = petgraph::graphmap::DiGraphMap::new();
-    let mut vert2idx = HashMap::new();
-    let mut idx2vert = HashMap::new();
-    let mut same_vert: HashMap<String, BTreeMap<NaiveTime, usize>> = HashMap::new();
-    let mut vert_counter = 0;
-
-
-    let mut counter = 0;
-    let start = SystemTime::now();
-
-    let mut connections = Vec::new();
-
     let base_folder = Path::new("sample-all");
+
+    let start = SystemTime::now();
+    let connections: MultiConnection;
 
     if base_folder.join("cache.bin").is_file() && true {
         println!("Loading from cache");
-        let file = File::open(base_folder.join("cache.bin"))?;
+        let file = ZlibDecoder::new(File::open(base_folder.join("cache.bin"))?);
         connections = bincode::deserialize_from(file)?;
     } else {
+        let mut counter = 0;
+        let mut sub_conns = Vec::new();
         for entry in base_folder.read_dir()? {
             if let Ok(entry) = entry {
                 if entry.path().is_file() && entry.path().extension() == Some("xml".as_ref()) {
@@ -39,45 +36,51 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     }
                     counter += 1;
                     let connection = parse_netex(entry.path())?;
-                    connections.push(connection);
+                    sub_conns.push(connection);
                 }
             }
         }
+        connections = MultiConnection::from(sub_conns);
         println!("Caching...");
-        let mut file = File::create(base_folder.join("cache.bin"))?;
-        bincode::serialize_into(&file, &connections)?;
+        let mut file = ZlibEncoder::new(File::create(base_folder.join("cache.bin"))?, Compression::default());
+        bincode::serialize_into(&mut file, &connections)?;
         file.flush()?;
     }
 
     println!("Creating graph...");
+    let mut graph = petgraph::graphmap::DiGraphMap::new();
+    let mut vert2idx = HashMap::new();
+    let mut idx2vert = HashMap::new();
+    let mut same_vert: HashMap<String, BTreeMap<NaiveTime, usize>> = HashMap::new();
+    let mut vert_counter = 0;
 
-    for connection in connections {
-        for stop_name in &connection.stops {
-            if !same_vert.contains_key(stop_name) {
-                same_vert.insert(stop_name.clone(), BTreeMap::<NaiveTime, usize>::new());
-            }
+    for stop_name in &connections.stops {
+        if !same_vert.contains_key(stop_name) {
+            same_vert.insert(stop_name.clone(), BTreeMap::<NaiveTime, usize>::new());
         }
+    }
+    for connection in &connections.connections {
         for journey in &connection.journeys {
             if journey.is_valid(&connection, NaiveDateTime::from(NaiveDate::from_ymd_opt(2024, 11, 4).unwrap())) {
                 for i in 0..journey.passings.len() - 1 {
                     let start_st = &journey.passings[i];
-                    let end_st = &journey.passings[i+1];
+                    let end_st = &journey.passings[i + 1];
                     // don't go back in time
                     if end_st.arrival <= start_st.departure {
                         continue;
                     }
-                    let start_name = connection.stops[start_st.stop_point].clone() + ";" + &start_st.departure.unwrap().to_string().clone();
-                    let end_name = connection.stops[end_st.stop_point].clone() + ";" + &end_st.arrival.unwrap().to_string().clone();
+                    let start_name = connections.stops[start_st.stop_point].clone() + ";" + &start_st.departure.unwrap().to_string().clone();
+                    let end_name = connections.stops[end_st.stop_point].clone() + ";" + &end_st.arrival.unwrap().to_string().clone();
                     if !vert2idx.contains_key(&start_name) {
                         vert2idx.insert(start_name.clone(), vert_counter);
                         idx2vert.insert(vert_counter, start_name.clone());
-                        same_vert.get_mut(&connection.stops[start_st.stop_point].clone()).unwrap().insert(start_st.departure.unwrap(), vert_counter);
+                        same_vert.get_mut(&connections.stops[start_st.stop_point].clone()).unwrap().insert(start_st.departure.unwrap(), vert_counter);
                         vert_counter += 1;
                     }
                     if !vert2idx.contains_key(&end_name) {
                         vert2idx.insert(end_name.clone(), vert_counter);
                         idx2vert.insert(vert_counter, end_name.clone());
-                        same_vert.get_mut(&connection.stops[end_st.stop_point].clone()).unwrap().insert(end_st.arrival.unwrap(), vert_counter);
+                        same_vert.get_mut(&connections.stops[end_st.stop_point].clone()).unwrap().insert(end_st.arrival.unwrap(), vert_counter);
                         vert_counter += 1;
                     }
                     graph.add_edge(
@@ -104,7 +107,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             start_t = end_t;
         }
     }
-    let end_vert: Vec<usize> = same_vert["Liberec/RailStation"].iter().map(|(k, v)| *v).collect();
+    let end_vert: Vec<usize> = same_vert["Hradec Králové,,Terminál HD/Other"].iter().map(|(_, v)| *v).collect();
 
     for (_, start_vert) in &same_vert["Opočno,,nám./Other"] {
         println!("start {}", idx2vert[&start_vert]);
