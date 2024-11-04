@@ -49,10 +49,10 @@ pub fn parse_netex<P: AsRef<Path>>(file_path: P) -> Result<Connection, Box<dyn s
     let mut reader = Reader::from_file(file_path)?;
 
     let mut path = Vec::with_capacity(64);
-    let mut buffer = Vec::new();
+    let mut buffer = Vec::with_capacity(1024*1024);
 
-    let mut id = None;
-    let mut id_pattern = None;
+    let mut id = String::new();
+    let mut id_pattern = String::new();
     let mut ref_op_period = None;
     let mut ref_day_type = None;
 
@@ -70,45 +70,31 @@ pub fn parse_netex<P: AsRef<Path>>(file_path: P) -> Result<Connection, Box<dyn s
         match reader.read_event_into(&mut buffer) {
             Ok(Event::Start(ref e)) => {
                 path.push(String::from_utf8(Vec::from(e.name().0)).unwrap());
-                if path_vec_eq(&path, netex_frames![
-                    "ServiceFrame", "scheduledStopPoints", "ScheduledStopPoint"
-                ]) {
-                    id = Some(e.try_get_attribute("id")?.unwrap().unescape_value()?.to_string());
-                } else if path_vec_eq(&path, netex_frames![
-                    "ServiceFrame", "stopAssignments", "PassengerStopAssignment"
-                ]) {
+                if path == netex_frames!["ServiceFrame", "scheduledStopPoints", "ScheduledStopPoint"] {
+                    id = e.try_get_attribute("id")?.unwrap().unescape_value()?.to_string();
+                } else if path == netex_frames!["ServiceFrame", "stopAssignments", "PassengerStopAssignment"] {
                     passenger_stops.push((None, None));
-                } else if path_vec_eq(&path, netex_frames![
-                    "ServiceFrame", "journeyPatterns", "ServiceJourneyPattern"
-                ]) {
-                    id_pattern = Some(e.try_get_attribute("id")?.unwrap().unescape_value()?.to_string());
-                    journey_patterns.insert(id_pattern.clone().unwrap().clone(), ParsedJourneyPattern {
+                } else if path == netex_frames!["ServiceFrame", "journeyPatterns", "ServiceJourneyPattern"] {
+                    id_pattern = e.try_get_attribute("id")?.unwrap().unescape_value()?.to_string();
+                    journey_patterns.insert(id_pattern.clone(), ParsedJourneyPattern {
                         order: BTreeMap::new(),
                         points: HashMap::new(),
                     });
-                } else if path_vec_eq(&path, netex_frames![
-                    "ServiceFrame", "journeyPatterns", "ServiceJourneyPattern", "pointsInSequence", "StopPointInJourneyPattern"
-                ]) {
-                    id = Some(e.try_get_attribute("id")?.unwrap().unescape_value()?.to_string());
+                } else if path == netex_frames!["ServiceFrame", "journeyPatterns", "ServiceJourneyPattern", "pointsInSequence", "StopPointInJourneyPattern"] {
+                    id = e.try_get_attribute("id")?.unwrap().unescape_value()?.to_string();
                     let order = i32::from_str(&*e.try_get_attribute("order")?.unwrap().unescape_value()?)?;
-                    journey_patterns.get_mut(&id_pattern.clone().unwrap()).unwrap().order.insert(order, id.clone().unwrap().clone());
-                } else if path_vec_eq(&path, netex_frames![
-                    "ServiceCalendarFrame", "ServiceCalendar", "operatingPeriods", "UicOperatingPeriod"
-                ]) {
-                    id = Some(e.try_get_attribute("id")?.unwrap().unescape_value()?.to_string());
-                    operating_perdios.insert(id.clone().unwrap().clone(), ParsedOperatingPeriod {
-                        from_date: Default::default(),
-                        to_date: Default::default(),
-                        day_bits: Default::default(),
+                    journey_patterns.get_mut(&id_pattern).unwrap().order.insert(order, id.clone());
+                } else if path == netex_frames!["ServiceCalendarFrame", "ServiceCalendar", "operatingPeriods", "UicOperatingPeriod"] {
+                    id = e.try_get_attribute("id")?.unwrap().unescape_value()?.to_string();
+                    operating_perdios.insert(id.clone(), ParsedOperatingPeriod {
+                        from_date: None,
+                        to_date: None,
+                        day_bits: None,
                     });
-                } else if path_vec_eq(&path, netex_frames![
-                    "SiteFrame", "stopPlaces", "StopPlace"
-                ]) {
-                    id = Some(e.try_get_attribute("id")?.unwrap().unescape_value()?.to_string());
-                    stop_place2name_type.insert(id.clone().unwrap().clone(), (None, None));
-                } else if path_vec_eq(&path, netex_frames![
-                    "TimetableFrame", "vehicleJourneys", "ServiceJourney"
-                ]) {
+                } else if path == netex_frames!["SiteFrame", "stopPlaces", "StopPlace"] {
+                    id = e.try_get_attribute("id")?.unwrap().unescape_value()?.to_string();
+                    stop_place2name_type.insert(id.clone(), (None, None));
+                } else if path == netex_frames!["TimetableFrame", "vehicleJourneys", "ServiceJourney"] {
                     service_journeys.push(ParsedServiceJourney {
                         valid_from: None,
                         valid_to: None,
@@ -116,9 +102,7 @@ pub fn parse_netex<P: AsRef<Path>>(file_path: P) -> Result<Connection, Box<dyn s
                         pattern: None,
                         passings: Vec::new()
                     });
-                } else if path_vec_eq(&path, netex_frames![
-                    "TimetableFrame", "vehicleJourneys", "ServiceJourney", "passingTimes", "TimetabledPassingTime"
-                ]) {
+                } else if path == netex_frames!["TimetableFrame", "vehicleJourneys", "ServiceJourney", "passingTimes", "TimetabledPassingTime"] {
                     service_journeys.last_mut().unwrap().passings.push(ParsedPassing {
                         stop_point: None,
                         departure: None,
@@ -128,50 +112,30 @@ pub fn parse_netex<P: AsRef<Path>>(file_path: P) -> Result<Connection, Box<dyn s
             }
             Ok(Event::Empty(e)) => {
                 path.push(String::from_utf8(Vec::from(e.name().0)).unwrap());
-                if path_vec_eq(&path, netex_frames![
-                    "ServiceCalendarFrame", "ServiceCalendar", "dayTypes", "DayType"
-                ]) {
+                if path == netex_frames!["ServiceCalendarFrame", "ServiceCalendar", "dayTypes", "DayType"] {
                     day_types.push(e.try_get_attribute("id")?.unwrap().unescape_value()?.to_string());
-                } else if path_vec_eq(&path, netex_frames![
-                    "ServiceCalendarFrame", "ServiceCalendar", "dayTypeAssignments", "DayTypeAssignment", "OperatingPeriodRef"
-                ]) {
+                } else if path == netex_frames!["ServiceCalendarFrame", "ServiceCalendar", "dayTypeAssignments", "DayTypeAssignment", "OperatingPeriodRef"] {
                     ref_op_period = Some(e.try_get_attribute("ref")?.unwrap().unescape_value()?.to_string());
-                } else if path_vec_eq(&path, netex_frames![
-                    "ServiceCalendarFrame", "ServiceCalendar", "dayTypeAssignments", "DayTypeAssignment", "DayTypeRef"
-                ]) {
+                } else if path == netex_frames!["ServiceCalendarFrame", "ServiceCalendar", "dayTypeAssignments", "DayTypeAssignment", "DayTypeRef"] {
                     ref_day_type = Some(e.try_get_attribute("ref")?.unwrap().unescape_value()?.to_string());
-                } else if path_vec_eq(&path, netex_frames![
-                    "ServiceFrame", "journeyPatterns", "ServiceJourneyPattern", "pointsInSequence", "StopPointInJourneyPattern", "ScheduledStopPointRef"
-                ]) {
-                    journey_patterns.get_mut(&id_pattern.clone().unwrap()).unwrap().points
-                        .insert(id.clone().unwrap().clone(), e.try_get_attribute("ref")?.unwrap().unescape_value()?.to_string());
-                } else if path_vec_eq(&path, netex_frames![
-                    "ServiceFrame", "stopAssignments", "PassengerStopAssignment", "ScheduledStopPointRef"
-                ]) {
+                } else if path == netex_frames!["ServiceFrame", "journeyPatterns", "ServiceJourneyPattern", "pointsInSequence", "StopPointInJourneyPattern", "ScheduledStopPointRef"] {
+                    journey_patterns.get_mut(&id_pattern).unwrap().points
+                        .insert(id.clone(), e.try_get_attribute("ref")?.unwrap().unescape_value()?.to_string());
+                } else if path == netex_frames!["ServiceFrame", "stopAssignments", "PassengerStopAssignment", "ScheduledStopPointRef"] {
                     passenger_stops.last_mut().unwrap().0 = Some(e.try_get_attribute("ref")?.unwrap().unescape_value()?.to_string());
-                } else if path_vec_eq(&path, netex_frames![
-                    "ServiceFrame", "stopAssignments", "PassengerStopAssignment", "StopPlaceRef"
-                ]) {
+                } else if path == netex_frames!["ServiceFrame", "stopAssignments", "PassengerStopAssignment", "StopPlaceRef"] {
                     passenger_stops.last_mut().unwrap().1 = Some(e.try_get_attribute("ref")?.unwrap().unescape_value()?.to_string());
-                } else if path_vec_eq(&path, netex_frames![
-                    "TimetableFrame", "vehicleJourneys", "ServiceJourney", "dayTypes", "DayTypeRef"
-                ]) {
+                } else if path == netex_frames!["TimetableFrame", "vehicleJourneys", "ServiceJourney", "dayTypes", "DayTypeRef"] {
                     service_journeys.last_mut().unwrap().day_types.push(e.try_get_attribute("ref")?.unwrap().unescape_value()?.to_string());
-                } else if path_vec_eq(&path, netex_frames![
-                    "TimetableFrame", "vehicleJourneys", "ServiceJourney", "ServiceJourneyPatternRef"
-                ]) {
+                } else if path == netex_frames!["TimetableFrame", "vehicleJourneys", "ServiceJourney", "ServiceJourneyPatternRef"] {
                     service_journeys.last_mut().unwrap().pattern = Some(e.try_get_attribute("ref")?.unwrap().unescape_value()?.to_string());
-                } else if path_vec_eq(&path, netex_frames![
-                    "TimetableFrame", "vehicleJourneys", "ServiceJourney", "passingTimes", "TimetabledPassingTime", "StopPointInJourneyPatternRef"
-                ]) {
+                } else if path == netex_frames!["TimetableFrame", "vehicleJourneys", "ServiceJourney", "passingTimes", "TimetabledPassingTime", "StopPointInJourneyPatternRef"] {
                     service_journeys.last_mut().unwrap().passings.last_mut().unwrap().stop_point = Some(e.try_get_attribute("ref")?.unwrap().unescape_value()?.to_string());
                 }
                 path.pop();
             }
             Ok(Event::End(_)) => {
-                if path_vec_eq(&path, netex_frames![
-                    "ServiceCalendarFrame", "ServiceCalendar", "dayTypeAssignments", "DayTypeAssignment"
-                ]) {
+                if path == netex_frames!["ServiceCalendarFrame", "ServiceCalendar", "dayTypeAssignments", "DayTypeAssignment"] {
                     day_type2op_period.insert(ref_day_type.unwrap(), ref_op_period.unwrap());
                     ref_day_type = None;
                     ref_op_period = None;
@@ -179,49 +143,31 @@ pub fn parse_netex<P: AsRef<Path>>(file_path: P) -> Result<Connection, Box<dyn s
                 path.pop();
             }
             Ok(Event::Text(e)) => {
-                if path_vec_eq(&path, netex_frames![
-                    "ServiceCalendarFrame", "ServiceCalendar", "operatingPeriods", "UicOperatingPeriod", "FromDate"
-                ]) {
-                    operating_perdios.get_mut(&id.clone().unwrap()).unwrap().from_date = Some(NaiveDateTime::parse_from_str(&e.unescape()?, "%Y-%m-%dT%H:%M:%S")?);
-                } else if path_vec_eq(&path, netex_frames![
-                    "ServiceCalendarFrame", "ServiceCalendar", "operatingPeriods", "UicOperatingPeriod", "ToDate"
-                ]) {
-                    operating_perdios.get_mut(&id.clone().unwrap()).unwrap().to_date = Some(NaiveDateTime::parse_from_str(&e.unescape()?, "%Y-%m-%dT%H:%M:%S")?);
-                } else if path_vec_eq(&path, netex_frames![
-                    "ServiceCalendarFrame", "ServiceCalendar", "operatingPeriods", "UicOperatingPeriod", "ValidDayBits"
-                ]) {
-                    let a = e.unescape()?.to_string();
-                    let bool_vec: Vec<bool> = a.chars().map(|c| c == '1').collect();
-                    let mut bits = BitSet::new();
+                if path == netex_frames!["ServiceCalendarFrame", "ServiceCalendar", "operatingPeriods", "UicOperatingPeriod", "FromDate"] {
+                    operating_perdios.get_mut(&id).unwrap().from_date = Some(NaiveDateTime::parse_from_str(&e.unescape()?, "%Y-%m-%dT%H:%M:%S")?);
+                } else if path == netex_frames!["ServiceCalendarFrame", "ServiceCalendar", "operatingPeriods", "UicOperatingPeriod", "ToDate"] {
+                    operating_perdios.get_mut(&id).unwrap().to_date = Some(NaiveDateTime::parse_from_str(&e.unescape()?, "%Y-%m-%dT%H:%M:%S")?);
+                } else if path == netex_frames!["ServiceCalendarFrame", "ServiceCalendar", "operatingPeriods", "UicOperatingPeriod", "ValidDayBits"] {
+                    let bool_vec: Vec<bool> = e.unescape()?
+                        .chars().map(|c| c == '1').collect();
+                    let mut bits = BitSet::with_capacity(bool_vec.len());
                     for i in 0..bool_vec.len() {
                         if bool_vec[i] {
                             bits.insert(i);
                         }
                     }
-                    operating_perdios.get_mut(&id.clone().unwrap()).unwrap().day_bits = Some(bits);
-                } else if path_vec_eq(&path, netex_frames![
-                    "SiteFrame", "stopPlaces", "StopPlace", "Name"
-                ]) {
-                    stop_place2name_type.get_mut(&id.clone().unwrap()).unwrap().0 = Some(e.unescape()?.to_string());
-                } else if path_vec_eq(&path, netex_frames![
-                    "SiteFrame", "stopPlaces", "StopPlace", "StopPlaceType"
-                ]) {
-                    stop_place2name_type.get_mut(&id.clone().unwrap()).unwrap().1 = Some(StopPlaceType::from_str(&e.unescape()?));
-                } else if path_vec_eq(&path, netex_frames![
-                    "TimetableFrame", "vehicleJourneys", "ServiceJourney", "ValidBetween", "FromDate"
-                ]) {
+                    operating_perdios.get_mut(&id).unwrap().day_bits = Some(bits);
+                } else if path == netex_frames!["SiteFrame", "stopPlaces", "StopPlace", "Name"] {
+                    stop_place2name_type.get_mut(&id).unwrap().0 = Some(e.unescape()?.to_string());
+                } else if path == netex_frames!["SiteFrame", "stopPlaces", "StopPlace", "StopPlaceType"] {
+                    stop_place2name_type.get_mut(&id).unwrap().1 = Some(StopPlaceType::from_str(&e.unescape()?));
+                } else if path == netex_frames!["TimetableFrame", "vehicleJourneys", "ServiceJourney", "ValidBetween", "FromDate"] {
                     service_journeys.last_mut().unwrap().valid_from = Some(NaiveDateTime::parse_from_str(&e.unescape()?, "%Y-%m-%dT%H:%M:%S")?);
-                } else if path_vec_eq(&path, netex_frames![
-                    "TimetableFrame", "vehicleJourneys", "ServiceJourney", "ValidBetween", "ToDate"
-                ]) {
+                } else if path == netex_frames!["TimetableFrame", "vehicleJourneys", "ServiceJourney", "ValidBetween", "ToDate"] {
                     service_journeys.last_mut().unwrap().valid_to = Some(NaiveDateTime::parse_from_str(&e.unescape()?, "%Y-%m-%dT%H:%M:%S")?);
-                } else if path_vec_eq(&path, netex_frames![
-                    "TimetableFrame", "vehicleJourneys", "ServiceJourney", "passingTimes", "TimetabledPassingTime", "DepartureTime"
-                ]) {
+                } else if path == netex_frames!["TimetableFrame", "vehicleJourneys", "ServiceJourney", "passingTimes", "TimetabledPassingTime", "DepartureTime"] {
                     service_journeys.last_mut().unwrap().passings.last_mut().unwrap().departure = Some(NaiveTime::parse_from_str(&e.unescape()?, "%H:%M:%S")?);
-                } else if path_vec_eq(&path, netex_frames![
-                    "TimetableFrame", "vehicleJourneys", "ServiceJourney", "passingTimes", "TimetabledPassingTime", "ArrivalTime"
-                ]) {
+                } else if path == netex_frames!["TimetableFrame", "vehicleJourneys", "ServiceJourney", "passingTimes", "TimetabledPassingTime", "ArrivalTime"] {
                     service_journeys.last_mut().unwrap().passings.last_mut().unwrap().arrival = Some(NaiveTime::parse_from_str(&e.unescape()?, "%H:%M:%S")?);
                 }
             }
@@ -231,8 +177,8 @@ pub fn parse_netex<P: AsRef<Path>>(file_path: P) -> Result<Connection, Box<dyn s
         }
     }
 
-    let mut new_op_periods = Vec::new();
-    let mut idx_op_periods = HashMap::new();
+    let mut new_op_periods = Vec::with_capacity(operating_perdios.len());
+    let mut idx_op_periods = HashMap::with_capacity(operating_perdios.len());
     for (name, data) in operating_perdios {
         idx_op_periods.insert(name, new_op_periods.len());
         new_op_periods.push(OperatingPeriod {
@@ -242,8 +188,8 @@ pub fn parse_netex<P: AsRef<Path>>(file_path: P) -> Result<Connection, Box<dyn s
         });
     }
 
-    let mut new_day_types = Vec::new();
-    let mut idx_day_types = HashMap::new();
+    let mut new_day_types = Vec::with_capacity(day_types.len());
+    let mut idx_day_types = HashMap::with_capacity(day_types.len());
     for day_type in day_types {
         idx_day_types.insert(day_type.clone(), new_day_types.len());
         if let Some(period) = day_type2op_period.get(&day_type) {
@@ -253,41 +199,41 @@ pub fn parse_netex<P: AsRef<Path>>(file_path: P) -> Result<Connection, Box<dyn s
         }
     }
 
-    let mut new_stops = Vec::new();
-    let mut idx_stops = HashMap::new();
-    for (sched_stop_ref, stop_place_ref) in &passenger_stops {
-        idx_stops.insert(sched_stop_ref.clone().unwrap(), new_stops.len());
+    let mut new_stops = Vec::with_capacity(passenger_stops.len());
+    let mut idx_stops = HashMap::with_capacity(passenger_stops.len());
+    for (sched_stop_ref, stop_place_ref) in passenger_stops {
+        idx_stops.insert(sched_stop_ref.unwrap(), new_stops.len());
         new_stops.push(
-                           stop_place2name_type[&stop_place_ref.clone().unwrap()].0.clone().unwrap().clone()
-                               + "/" + stop_place2name_type[&stop_place_ref.clone().unwrap()].1.clone().unwrap().to_string().as_str(),
+            stop_place2name_type[&stop_place_ref.clone().unwrap()].0.clone().unwrap().clone()
+                + "/" + stop_place2name_type[&stop_place_ref.clone().unwrap()].1.clone().unwrap().to_string().as_str(),
         );
     }
 
-    let mut new_patterns = Vec::new();
-    let mut idx_patterns = HashMap::new();
+    let mut new_patterns = Vec::with_capacity(journey_patterns.len());
+    let mut idx_patterns = HashMap::with_capacity(journey_patterns.len());
     for (name, pattern) in journey_patterns {
         idx_patterns.insert(name, new_patterns.len());
-        let mut sub_pattern = Vec::new();
+        let mut sub_pattern = Vec::with_capacity(pattern.order.len());
         for (_, stop_point) in pattern.order {
             sub_pattern.push((stop_point.clone(), idx_stops[&pattern.points[&stop_point]]));
         }
         new_patterns.push(sub_pattern);
     }
 
-    let mut new_journeys = Vec::new();
+    let mut new_journeys = Vec::with_capacity(service_journeys.len());
     for parsed_journey in service_journeys {
         let pattern_idx = idx_patterns[&parsed_journey.pattern.unwrap()];
-        let mut days = Vec::new();
+        let mut days = Vec::with_capacity(parsed_journey.day_types.len());
         for day_type in parsed_journey.day_types {
             days.push(idx_day_types[&day_type]);
         }
         let valid_from = parsed_journey.valid_from.unwrap();
         let valid_to = parsed_journey.valid_to.unwrap();
-        let mut passings = HashMap::new();
+        let mut passings = HashMap::with_capacity(parsed_journey.passings.len());
         for parsed_passing in parsed_journey.passings {
             passings.insert(parsed_passing.stop_point.unwrap(), (parsed_passing.arrival, parsed_passing.departure));
         }
-        let mut new_passings = Vec::new();
+        let mut new_passings = Vec::with_capacity(passings.len());
         for (sched_point, stop) in &new_patterns[pattern_idx] {
             new_passings.push(Passing {
                 stop_point: *stop,
@@ -309,11 +255,4 @@ pub fn parse_netex<P: AsRef<Path>>(file_path: P) -> Result<Connection, Box<dyn s
         stops: new_stops,
         journeys: new_journeys,
     })
-}
-
-fn path_vec_eq(left_path: &Vec<String>, rigth_path: Vec<&str>) -> bool {
-    if left_path.len() != rigth_path.len() {
-        return false;
-    }
-    left_path.iter().zip(rigth_path.iter()).all(|(a, b)| a == b)
 }
