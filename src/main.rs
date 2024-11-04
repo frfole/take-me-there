@@ -5,13 +5,33 @@ use petgraph::visit::EdgeRef;
 use std::collections::{BTreeMap, HashMap};
 use std::fs::File;
 use std::io::{Read, Write};
-use std::path::Path;
+use std::path::PathBuf;
 use std::time::SystemTime;
+use clap::Parser;
 
 mod parser;
 
 
+#[derive(clap::Parser, Debug)]
+#[command(
+    version = "0.1",
+    about = "A program which calculates the shortest time to get from a \
+    specified station to all other stations via public transport.",
+    long_about = None
+)]
+struct Args {
+    /// Path to timetables
+    #[arg(index = 1)]
+    data_path: PathBuf,
+
+    /// Parse time tables even if a parsing cache exists
+    #[arg(long, short)]
+    invalidate_cache: bool,
+}
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let args = Args::parse();
+
     let mut graph = petgraph::graphmap::DiGraphMap::new();
     let mut vert2idx = HashMap::new();
     let mut idx2vert = HashMap::new();
@@ -24,12 +44,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut connections = Vec::new();
 
-    if Path::new("sample-all/cache.bin").is_file() {
+    let data_cache = args.data_path.join("cache.bin");
+
+    if (!args.invalidate_cache) && data_cache.is_file() {
         println!("Loading from cache");
-        let file = File::open("sample-all/cache.bin")?;
+        let file = File::open(data_cache)?;
         connections = bincode::deserialize_from(file)?;
     } else {
-        for entry in Path::new("sample-all").read_dir()? {
+        for entry in args.data_path.read_dir()? {
             if let Ok(entry) = entry {
                 if entry.path().is_file() && entry.path().extension() == Some("xml".as_ref()) {
                     if counter % 100 == 0 {
@@ -42,7 +64,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         }
         println!("Caching...");
-        let mut file = File::create("sample-all/cache.bin")?;
+        let mut file = File::create(data_cache)?;
         bincode::serialize_into(&file, &connections)?;
         file.flush()?;
     }
