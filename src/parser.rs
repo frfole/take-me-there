@@ -102,6 +102,7 @@ pub struct Connection {
     // index of operating period in operating periods
     pub day_types: Vec<Option<usize>>,
     // stop names by index
+    // FIXME: there are stations with same name, which further down the line may cause problems
     pub stops: Vec<String>,
     pub journeys: Vec<Journey>
 }

@@ -4,5 +4,7 @@
 # to get those run download.sh in sample-all directory
 /sample-all/*.zip
 /sample-all/*.xml
+/sample-all/*.bin
+/sample/*.bin
 /temp
 

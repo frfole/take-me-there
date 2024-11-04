@@ -1,6 +1,6 @@
 use crate::parser::parse_netex;
-use chrono::{Duration, NaiveDate, NaiveDateTime, NaiveTime};
-use petgraph::algo::{astar, dijkstra, k_shortest_path};
+use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
+use petgraph::algo::{astar, dijkstra};
 use petgraph::visit::EdgeRef;
 use std::collections::{BTreeMap, HashMap};
 use std::fs::File;
@@ -34,12 +34,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 if entry.path().is_file() && entry.path().extension() == Some("xml".as_ref()) {
                     if counter % 100 == 0 {
                         println!("parsing {} {}", counter, entry.path().display());
-                        // if counter == 5000 {
-                        //     break
-                        // }
                     }
                     counter += 1;
-                    // TODO: cache it
                     let connection = parse_netex(entry.path())?;
                     connections.push(connection);
                 }
@@ -47,9 +43,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         println!("Caching...");
         let mut file = File::create("sample-all/cache.bin")?;
-        bincode::serialize_into(&file, &connections);
+        bincode::serialize_into(&file, &connections)?;
         file.flush()?;
     }
+
+    println!("Creating graph...");
 
     for connection in connections {
         for stop_name in &connection.stops {
@@ -99,19 +97,24 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let mut iter = verts.iter();
         let (mut start_t, mut start_vert) = iter.next().unwrap();
         for (end_t, end_vert) in iter {
-            graph.add_edge(*start_vert, *end_vert, 0);
+            graph.add_edge(*start_vert, *end_vert, (end_t.clone() - start_t.clone()).num_seconds());
             start_vert = end_vert;
+            start_t = end_t;
         }
     }
-    let start_vert = same_vert["Opočno,,nám."].first_key_value().unwrap().1;
-    let end_vert = same_vert["Liberec"].first_key_value().unwrap().1;
-    println!("start {}", idx2vert[&start_vert]);
-    let scores = astar(&graph, *start_vert, |f| f == *end_vert, |e| *e.weight(), |_| 0).unwrap();
-    println!("cost: {}", scores.0);
-    for vert in scores.1 {
-        println!("{}", idx2vert[&vert]);
+    let end_vert: Vec<usize> = same_vert["Liberec"].iter().map(|(k, v)| *v).collect();
+
+    for (_, start_vert) in &same_vert["Opočno,,nám."] {
+        println!("start {}", idx2vert[&start_vert]);
+        let scores = astar(&graph, *start_vert, |f| end_vert.contains(&f), |e| *e.weight(), |_| 0).unwrap();
+        println!("cost: {}", scores.0);
+        for vert in scores.1 {
+            print!("{} ", idx2vert[&vert]);
+        }
+        println!();
+        println!();
     }
-    // let scores = dijkstra(&graph, start_vert, None, |e| *e.weight());
+    // let scores = dijkstra(&graph, *start_vert, None, |e| *e.weight());
     // for (vert, score) in scores {
     //     let dt = NaiveTime::from_num_seconds_from_midnight_opt(score as u32, 0);
     //     if let Some(dt) = dt {
