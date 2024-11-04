@@ -85,7 +85,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let connections = load_netex(&args.data_path, args.invalidate_cache)?;
 
-
     println!("Creating graph...");
     let mut graph = petgraph::graphmap::DiGraphMap::new();
     let mut vert2idx = HashMap::new();
