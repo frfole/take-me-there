@@ -4,12 +4,12 @@ use connection_graph::Vertex;
 use petgraph::algo::{astar, dijkstra};
 use petgraph::visit::EdgeRef;
 use std::fs::File;
-use std::io::Write;
+use std::io::{BufReader, BufWriter, Write};
 use std::path::PathBuf;
 use std::time::SystemTime;
 use clap::Parser;
 use flate2::Compression;
-use flate2::read::ZlibDecoder;
+use flate2::bufread::ZlibDecoder;
 use flate2::write::ZlibEncoder;
 use crate::structure::MultiConnection;
 use crate::connection_graph::ConnectionGraph;
@@ -38,9 +38,9 @@ struct Args {
 fn save_netex_cache(cache_path: &PathBuf, connections: &MultiConnection)
 -> Result<(), Box<dyn std::error::Error>>
 {
-    let mut file = ZlibEncoder::new(File::create(&cache_path)?, Compression::default());
-    bincode::serialize_into(&mut file, &connections)?;
-    file.flush()?;
+    let mut reader = ZlibEncoder::new(BufWriter::new(File::create(&cache_path)?), Compression::default());
+    bincode::serialize_into(&mut reader, &connections)?;
+    reader.flush()?;
     Ok(())
 }
 
@@ -53,8 +53,8 @@ fn load_netex(path: &PathBuf, invalidate_cache: bool)
 
     if (!invalidate_cache) && data_cache.is_file() {
         println!("Loading from cache");
-        let file = ZlibDecoder::new(File::open(data_cache)?);
-        connections = bincode::deserialize_from(file)?;
+        let reader = ZlibDecoder::new(BufReader::new(File::open(data_cache)?));
+        connections = bincode::deserialize_from(reader)?;
     } else {
         let mut counter = 0;
         let mut sub_conns = Vec::new();
