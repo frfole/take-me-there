@@ -1,5 +1,5 @@
 use crate::parser::parse_netex;
-use chrono::NaiveTime;
+use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 use petgraph::algo::{astar, dijkstra};
 use petgraph::visit::EdgeRef;
 use std::fs::File;
@@ -89,12 +89,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     eprintln!("Connections loaded in {:?}", start.elapsed().expect("Failed to get elapsed time"));
     start = SystemTime::now();
 
-    let g = ConnectionGraph::new(&connections);
+    let date = NaiveDateTime::from(NaiveDate::from_ymd_opt(2024, 11, 4).unwrap());
+    let g = ConnectionGraph::new(&connections, &date);
 
     eprintln!("Graph built in {:?}", start.elapsed().expect("Failed to get elapsed time"));
 
-    let start_station = &g.stations["Benešov,Vidlákova Lhota,rozc./Other"].init;
-    // let end_station = &g.stations["Hradec Králové,,Terminál HD/Other"].fin;
+    // let start_station = &g.stations["Benešov,Vidlákova Lhota,rozc./Other"].init;
+    let start_station = &g.stations["Hradec Králové,,Terminál HD/Other"].init;
 
     // eprintln!("{:?} -> {:?}", g.stop_by_id(start_station), g.terminal_by_id(end_station));
 

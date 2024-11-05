@@ -171,6 +171,22 @@ impl From<Vec<Connection>> for MultiConnection {
     }
 }
 
+impl MultiConnection {
+    pub fn iter_valid_journeys<'l>(&'l self, date: &'l NaiveDateTime)
+    -> impl Iterator<Item = &Journey> + 'l
+    {
+        self.connections.iter()
+        .flat_map(
+            |conn|
+                conn.journeys.iter()
+                .filter(
+                    |j|
+                        j.is_valid(conn, date)
+                )
+        )
+    }
+}
+
 mod opt_ts_seconds {
     use chrono::{NaiveTime, Timelike};
     use serde::{self, Deserialize, Deserializer, Serializer};
