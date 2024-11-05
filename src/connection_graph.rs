@@ -1,10 +1,14 @@
 use chrono::{NaiveDateTime, NaiveTime};
+use flate2::Compression;
+use flate2::bufread::ZlibDecoder;
+use flate2::write::ZlibEncoder;
 use petgraph::prelude::{Directed, GraphMap};
-use std::collections::{BTreeMap, HashMap};
+use std::{collections::{BTreeMap, HashMap}, fs::File, io::{BufReader, BufWriter, Write}, path::PathBuf};
 use crate::structure::MultiConnection;
 
 
 #[derive(Debug)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct Station<V> {
     pub init: V,
     pub fin: V,
@@ -12,6 +16,7 @@ pub struct Station<V> {
 }
 
 
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct ConnectionGraph {
     pub graph: GraphMap<usize, i64, Directed>,
     pub stations: HashMap<String, Station<usize>>,
@@ -209,5 +214,37 @@ impl ConnectionGraph {
             stations,
             stations_by_ids: names_by_ids,
         };
+    }
+
+
+    fn save(&self, cache_path: &PathBuf)
+    -> Result<(), Box<dyn std::error::Error>>
+    {
+        let mut writer = ZlibEncoder::new(BufWriter::new(File::create(&cache_path)?), Compression::default());
+        bincode::serialize_into(&mut writer, &self)?;
+        writer.flush()?;
+        Ok(())
+    }
+
+    pub fn load(path: &PathBuf, connections: &MultiConnection, date: &NaiveDateTime, invalidate_cache: &bool)
+    -> Result<ConnectionGraph, Box<dyn std::error::Error>>
+    {
+        let res;
+        
+        let graph_cache = path.join("graph.bin");
+
+        if (!invalidate_cache) && graph_cache.is_file() {
+            eprintln!("Loading graph from cache");
+            let reader = ZlibDecoder::new(BufReader::new(File::open(graph_cache)?));
+            res = bincode::deserialize_from(reader)?;
+        } else {
+            res = ConnectionGraph::new(&connections, &date);
+            eprintln!("Caching graph...");
+            if let Err(e) = res.save(&graph_cache) {
+                eprintln!("Failed to save graph cache:\n {}", e);
+            }
+        }
+
+        Ok(res)
     }
 }

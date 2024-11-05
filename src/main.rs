@@ -32,6 +32,10 @@ struct Args {
     /// Parse time tables even if a parsing cache exists
     #[arg(long, short)]
     invalidate_cache: bool,
+
+    /// Discards cached graph
+    #[arg(long, short)]
+    recompute_graph: bool,
 }
 
 fn save_netex_cache(cache_path: &PathBuf, connections: &MultiConnection)
@@ -43,7 +47,7 @@ fn save_netex_cache(cache_path: &PathBuf, connections: &MultiConnection)
     Ok(())
 }
 
-fn load_netex(path: &PathBuf, invalidate_cache: bool)
+fn load_netex(path: &PathBuf, invalidate_cache: &bool)
 -> Result<MultiConnection, Box<dyn std::error::Error>>
 {
     let connections: MultiConnection;
@@ -51,7 +55,7 @@ fn load_netex(path: &PathBuf, invalidate_cache: bool)
     let data_cache = path.join("cache.bin");
 
     if (!invalidate_cache) && data_cache.is_file() {
-        eprintln!("Loading from cache");
+        eprintln!("Loading from time table cache");
         let reader = ZlibDecoder::new(BufReader::new(File::open(data_cache)?));
         connections = bincode::deserialize_from(reader)?;
     } else {
@@ -70,9 +74,9 @@ fn load_netex(path: &PathBuf, invalidate_cache: bool)
             }
         }
         connections = MultiConnection::from(sub_conns);
-        eprintln!("Caching...");
+        eprintln!("Caching time tables...");
         if let Err(e) = save_netex_cache(&data_cache, &connections) {
-            eprintln!("Failed to save cache:\n {}", e);
+            eprintln!("Failed to save time table cache:\n {}", e);
         }
     }
 
@@ -84,13 +88,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut start = SystemTime::now();
 
-    let connections = load_netex(&args.data_path, args.invalidate_cache)?;
+    let connections = load_netex(&args.data_path, &args.invalidate_cache)?;
 
     eprintln!("Connections loaded in {:?}", start.elapsed().expect("Failed to get elapsed time"));
     start = SystemTime::now();
 
     let date = NaiveDateTime::from(NaiveDate::from_ymd_opt(2024, 11, 4).unwrap());
-    let g = ConnectionGraph::new(&connections, &date);
+    let g = ConnectionGraph::load(
+        &args.data_path,
+        &connections, &date,
+        &(args.invalidate_cache || args.recompute_graph)
+    )?;
 
     eprintln!("Graph built in {:?}", start.elapsed().expect("Failed to get elapsed time"));
 

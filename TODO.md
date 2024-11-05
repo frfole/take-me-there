@@ -4,7 +4,6 @@
 - [ ] bus-train transfers probably do not work
 
 ## Improvements
-- [ ] cache graph
 
 ## Further plans
 - [ ] visualisation
@@ -15,4 +14,5 @@
 <!-- idealy should be empty when commiting -->
 
 ## Complete
+- [x] cache graph
 - [x] split graph construction into smaller functions
