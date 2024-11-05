@@ -1,6 +1,5 @@
 use crate::parser::parse_netex;
 use chrono::NaiveTime;
-use connection_graph::Vertex;
 use petgraph::algo::{astar, dijkstra};
 use petgraph::visit::EdgeRef;
 use std::fs::File;
@@ -52,7 +51,7 @@ fn load_netex(path: &PathBuf, invalidate_cache: bool)
     let data_cache = path.join("cache.bin");
 
     if (!invalidate_cache) && data_cache.is_file() {
-        println!("Loading from cache");
+        eprintln!("Loading from cache");
         let reader = ZlibDecoder::new(BufReader::new(File::open(data_cache)?));
         connections = bincode::deserialize_from(reader)?;
     } else {
@@ -62,7 +61,7 @@ fn load_netex(path: &PathBuf, invalidate_cache: bool)
             if let Ok(entry) = entry {
                 if entry.path().is_file() && entry.path().extension() == Some("xml".as_ref()) {
                     if counter % 100 == 0 {
-                        println!("parsing {} {}", counter, entry.path().display());
+                        eprintln!("parsing {} {}", counter, entry.path().display());
                     }
                     counter += 1;
                     let connection = parse_netex(entry.path())?;
@@ -71,9 +70,9 @@ fn load_netex(path: &PathBuf, invalidate_cache: bool)
             }
         }
         connections = MultiConnection::from(sub_conns);
-        println!("Caching...");
+        eprintln!("Caching...");
         if let Err(e) = save_netex_cache(&data_cache, &connections) {
-            println!("Failed to save cache:\n {}", e);
+            eprintln!("Failed to save cache:\n {}", e);
         }
     }
 
@@ -83,14 +82,21 @@ fn load_netex(path: &PathBuf, invalidate_cache: bool)
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
 
-    let start = SystemTime::now();
+    let mut start = SystemTime::now();
 
     let connections = load_netex(&args.data_path, args.invalidate_cache)?;
+
+    eprintln!("Connections loaded in {:?}", start.elapsed().expect("Failed to get elapsed time"));
+    start = SystemTime::now();
+
     let g = ConnectionGraph::new(&connections);
 
-    println!("{:?}", start.elapsed().expect("Failed to get elapsed time"));
-    let start = g.vert2idx.get(&Vertex::Initial("Opočno,,nám./Other".to_string()));
-    let end = g.vert2idx.get(&Vertex::Final("Hradec Králové,,Terminál HD/Other".to_string()));
+    eprintln!("Graph built in {:?}", start.elapsed().expect("Failed to get elapsed time"));
+
+    let start_station = &g.stations["Benešov,Vidlákova Lhota,rozc./Other"].init;
+    // let end_station = &g.stations["Hradec Králové,,Terminál HD/Other"].fin;
+
+    // eprintln!("{:?} -> {:?}", g.stop_by_id(start_station), g.terminal_by_id(end_station));
 
     /*
     let end_vert: Vec<usize> = g.same_vert["Hradec Králové,,Terminál HD/Other"].iter().map(|(_, v)| *v).collect();
@@ -110,18 +116,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     */
     let scores = dijkstra(
         &g.graph,
-        *start.unwrap(),
-        Some(*end.unwrap()),
-        // None,
+        *start_station,
+        // Some(*end_station),
+        None,
         |e| *e.weight()
     );
-    for (vert, score) in scores {
-        if let Vertex::Final(stop) = &g.idx2vert[&vert] {
-            let dt = NaiveTime::from_num_seconds_from_midnight_opt(score as u32, 0);
+    for (vert, score) in &scores {
+        // if let Vertex::Final(stop) = &g.idx2vert[&vert] {
+        if let Some(name) = &g.terminal_by_id(vert) {
+            let dt = NaiveTime::from_num_seconds_from_midnight_opt(*score as u32, 0);
             if let Some(dt) = dt {
-                println!("{} -> {} {}", score, stop, dt);
+                println!("{score} -> {name} {dt}");
             } else {
-                println!("{} -> {}", score, stop);
+                println!("{score} -> {name}");
             }
         }
     }

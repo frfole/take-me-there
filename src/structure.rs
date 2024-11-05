@@ -46,11 +46,11 @@ pub struct OperatingPeriod {
 }
 
 impl OperatingPeriod {
-    pub fn is_valid(&self, date: NaiveDateTime) -> bool {
-        if self.from_date > date || date > self.to_date {
+    pub fn is_valid(&self, date: &NaiveDateTime) -> bool {
+        if self.from_date > *date || *date > self.to_date {
             return false;
         }
-        let delta = date - self.from_date;
+        let delta = *date - self.from_date;
         self.day_bits.contains(delta.num_days() as usize)
     }
 }
@@ -68,8 +68,8 @@ pub struct Journey {
 }
 
 impl Journey {
-    pub fn is_valid(&self, parent: &SubMultiConnection, date: NaiveDateTime) -> bool {
-        if self.valid_from > date || date > self.valid_to {
+    pub fn is_valid(&self, parent: &SubMultiConnection, date: &NaiveDateTime) -> bool {
+        if self.valid_from > *date || *date > self.valid_to {
             return false;
         }
         for day_idx in &self.days {
